@@ -29,23 +29,10 @@ class LeaderTestType(graphene.ObjectType):
     group = graphene.List(LeaderTestInfo)
 
 
-class BannerType(LeaderTestType):
-    pass
-
-
-class IndexBannerType(LeaderTestType):
-    pass
-
-
-class Query:
-    leader_test = graphene.Field(LeaderTestType)
-    courses = graphene.Field(BannerType)
-    indexbanners = graphene.Field(IndexBannerType)
-
-
 class Query:
     leader_test = graphene.Field(LeaderTestType)
     courses = graphene.Field(LeaderTestType)
+    indexbanners = graphene.Field(LeaderTestType)
 
     def resolve_leader_test(self, info):
         leader_test_obj = TestDetailsModel.objects.filter(is_index_show=True, push_time__lt=datetime.now())
@@ -62,4 +49,4 @@ class Query:
         # 首页 第一部分 轮播图
         leader_test_obj = TestDetailsModel.objects.filter(is_index_show=True, push_time__lt=datetime.now())
         banner_info = leader_test_obj.values_list('title', 'url', 'image')
-        return IndexBannerType(group=[LeaderTestInfo(title=i[0], url=i[1], image=i[2]) for i in banner_info])
+        return LeaderTestType(group=[LeaderTestInfo(title=i[0], url=i[1], image=i[2]) for i in banner_info])
