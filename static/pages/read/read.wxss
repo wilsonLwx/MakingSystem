@@ -1,0 +1,136 @@
+.top {
+  display: flex;
+  justify-content: center;
+  margin: 30rpx 0;
+}
+
+.report_name {
+  position: absolute;
+  z-index: 9;
+  left: 26rpx;
+  top: 8rpx;
+}
+
+.report_title {
+  font-size: 36rpx;
+  color: #181818;
+  position: relative;
+  font-weight: 600;
+  border: solid 1rpx #bfbfbf;
+  width: 209rpx;
+  height: 58rpx;
+  text-align: center;
+}
+
+.report_title_line {
+  width: 160rpx;
+  height: 18rpx;
+  background-color: #64edac;
+  position: absolute;
+  top: 24rpx;
+  left: 18rpx;
+}
+
+.report_title_border {
+  width: 209rpx;
+  height: 58rpx;
+  border: solid 1rpx #bfbfbf;
+  margin-top: -50rpx;
+  margin-left: -9rpx;
+}
+
+.content {
+  width: 690rpx;
+  height: 854rpx;
+  /* background-size: 690rpx  900rpx; *//* width: 600px;
+  height: 300px; */
+  background-image: linear-gradient(90deg, rgba(180, 180, 180, 0.15) 10%, rgba(0, 0, 0, 0) 10%),
+                      linear-gradient(rgba(180, 180, 180, 0.15) 10%, rgba(0, 0, 0, 0) 10%);
+  background-size: 15rpx 15rpx;
+  margin: 0 30rpx;
+}
+
+.banner {
+  width: 690rpx;
+  height: 213rpx;
+  border-radius: 10rpx;
+  margin-top: 30rpx;
+}
+
+.content_text {
+  padding: 0 15rpx;
+  font-size: 28rpx;
+  color: #4c4c4c;
+  margin-top: 50rpx;
+}
+
+.share {
+  width: 690rpx;
+  height: 80rpx;
+  background-color: #47d692;
+  border-radius: 10rpx;
+  border: 0;
+  padding: 0;
+  font-size: 32rpx;
+  color: #fff;
+  line-height: 80rpx;
+}
+
+.share image {
+  width: 38rpx;
+  height: 38rpx;
+  vertical-align: middle;
+  margin-right: 10rpx;
+}
+
+.list_box {
+  margin: 30rpx 30rpx 0 30rpx;
+}
+
+.list_title {
+  font-size: 32rpx;
+  color: #0d0d0d;
+}
+
+.list_title image {
+  width: 36rpx;
+  height: 34rpx;
+}
+
+.list image {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 10rpx;
+}
+
+.list {
+  display: flex;
+  flex-direction: row;
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #eee;
+}
+
+.list_right {
+  color: #a6a6a6;
+  font-size: 24rpx;
+  margin-left: 20rpx;
+}
+
+.title {
+  font-size: 32rpx;
+  color: #212121;
+  margin: 20rpx 0 26rpx 0;
+}
+
+.number {
+  margin-top: 55rpx;
+  text-align: right;
+}
+
+.load {
+  font-size: 24rpx;
+  color: #dadada;
+  height: 100rpx;
+  text-align: center;
+  line-height: 100rpx;
+}
