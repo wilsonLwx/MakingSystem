@@ -1,0 +1,25 @@
+version: '3'
+services:
+  mariadb:
+    image: mariadb
+    expose:
+      - "3306"
+    ports:
+      - "53306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: p@ssw0rd123
+      MYSQL_USER: odin_user
+      MYSQL_DATABASE: django_dev
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bash -c "python manage.py makemigrations && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "9090:8000"
+    links:
+      - mariadb
+
