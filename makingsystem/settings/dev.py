@@ -4,10 +4,10 @@
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'USER': 'root',
+        'USER': 'odin_user',
         'NAME': 'django_dev',
         'HOST': 'mariadb',
         'PORT': 3306,
-        'PASSWORD': 'p@ssw0rd123',
+        'PASSWORD': 'password1234',
     }
 }

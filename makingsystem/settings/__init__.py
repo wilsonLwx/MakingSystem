@@ -5,6 +5,6 @@ from .base import *
 db_conf = os.getenv('app_conf', 'dev')
 
 if db_conf == 'dev':
-    from .dev import DATABASES
+    from .dev import *
 else:
-    from .test import DATABASES
+    from .test import *
