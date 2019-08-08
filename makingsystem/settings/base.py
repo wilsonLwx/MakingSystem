@@ -39,7 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'graphene_django',
+    'users',
 ]
+
+AUTH_USER_MODEL = "users.Users"
 
 GRAPHENE = {
     'SCHEMA': 'makingsystem.schema.schema',
