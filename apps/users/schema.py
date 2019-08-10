@@ -36,7 +36,7 @@ class ChangeInfo(graphene.Mutation):
         try:
             user_info = UserModel.objects.get(pk=pk)
         except Exception as e:
-            raise GraphQLError('user is not existed, please check input!')
+            raise GraphQLError('User is not existed, please check your input!')
         ok = user_info.check_password(old_pwd)
         if ok:
             user_info.set_password(new_pwd)
@@ -44,7 +44,7 @@ class ChangeInfo(graphene.Mutation):
             ok = ok
             return ChangeInfo(ok=ok, user=user_info)
         else:
-            raise GraphQLError('change the password failed!')
+            raise GraphQLError('Password authentication failed!')
 
 
 class Mutation(graphene.ObjectType):
