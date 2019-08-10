@@ -12,7 +12,6 @@ class Users(AbstractUser):
     email = models.EmailField(max_length=20, blank=True, null=True)
     school = models.CharField(max_length=20)
     name = models.CharField(max_length=10)
-    token = models.CharField(max_length=30)
     profession = models.CharField(max_length=20)
     number = models.IntegerField()
     date_birth = models.DateField(auto_now_add=True)
@@ -24,4 +23,4 @@ class Users(AbstractUser):
         db_table = 'Users'
 
     def __str__(self):
-        return Users.real_name
+        return Users.name
