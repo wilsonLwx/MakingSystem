@@ -5,6 +5,8 @@ from graphql import GraphQLError
 from .models import Users as UserModel
 from graphene_django import DjangoObjectType
 import graphene
+from django import db
+from django.contrib.auth import authenticate, login
 
 
 class UserType(DjangoObjectType):
@@ -57,5 +59,76 @@ class ChangeInfo(graphene.Mutation):
             raise GraphQLError('Password authentication failed!')
 
 
+class RegisterData(graphene.InputObjectType):
+    name = graphene.String(required=True)
+    passwd = graphene.String(required=True)
+    mobile = graphene.String(required=True)
+
+
+class Register(graphene.Mutation):
+    class Arguments:
+        register_data = RegisterData(required=True)
+
+    result = graphene.Boolean()
+    user = graphene.Field(UserType)
+    message = graphene.String()
+
+    def mutate(self, info, *args, **kwargs):
+        register_data = kwargs.get('register_data')
+        name = register_data.get('name')
+        passwd = register_data.get('passwd')
+        mobile = register_data.get('mobile')
+        user_info = UserModel.objects.filter(mobile=mobile)
+        if user_info:
+            message = "用户已注册"
+            return Register(reslut=False, user=user_info, message=message)
+
+        if not all([name, passwd, mobile]):
+            raise GraphQLError("有空信息输入")
+
+        try:
+            user = UserModel.objects.create_user(username=name, password=passwd, mobile=mobile)
+        except db.IntegrityError:
+            raise Exception("保存数据库失败")
+        user.is_active = False
+        user.save()
+        message="数据库保存成功"
+        return Register(result=True, user=user, message=message)
+
+
+class LoginData(graphene.InputObjectType):
+    mobile = graphene.String(required=True)
+    passwd = graphene.String(required=True)
+
+
+class Login(graphene.Mutation):
+    class Arguments:
+        login_data = LoginData(required=True)
+
+    result = graphene.Boolean()
+    user = graphene.Field(UserType)
+    message = graphene.String()
+
+    def mutate(self, info, *args, **kwargs):
+        login_data = kwargs.get('login_data')
+        mobile = login_data.get('mobile')
+        passwd = login_data.get('passwd')
+        if not all([mobile, passwd]):
+            raise GraphQLError("有空信息输入")
+        try:
+            user = UserModel.objects.get(mobile=mobile)
+        except Exception as e:
+            raise GraphQLError("手机号错误")
+        if not user.check_password(passwd):
+            raise GraphQLError("密码错误")
+        if not user.is_authenticated:
+            raise GraphQLError(f"{user}用户名或密码错误")
+        # login(info.context, user)
+        message = "登录成功"
+        return Login(result=True, user=user, message=message)
+
+
 class Mutation(graphene.ObjectType):
     change_info = ChangeInfo.Field()
+    register = Register.Field()
+    login = Login.Field()
