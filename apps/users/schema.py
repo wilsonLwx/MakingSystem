@@ -20,23 +20,33 @@ class Query(graphene.ObjectType):
         return UserModel.objects.all()
 
 
+class InputData(graphene.InputObjectType):
+    id = graphene.ID(required=True)
+    old_pwd = graphene.String(required=True)
+    new_pwd = graphene.String(required=True)
+
+
 class ChangeInfo(graphene.Mutation):
     class Arguments:
-        id = graphene.ID(required=True)
-        old_pwd = graphene.String(required=True)
-        new_pwd = graphene.String(required=True)
+        input_data = InputData(required=True)
 
     ok = graphene.Boolean()
     user = graphene.Field(UserType)
 
     def mutate(self, info, *args, **kwargs):
-        pk = kwargs.get('id')
-        new_pwd = kwargs.get('new_pwd')
-        old_pwd = kwargs.get('old_pwd')
+        input_data = kwargs.get('input_data')
+        pk = input_data.get('id')
+        new_pwd = input_data.get('new_pwd')
+        old_pwd = input_data.get('old_pwd')
         try:
             user_info = UserModel.objects.get(pk=pk)
         except Exception as e:
-            raise GraphQLError('user is not existed, please check input!')
+            raise GraphQLError('User is not existed, please check your input!')
+
+        user = info.context.user
+        if not user.is_authenticated:
+            raise Exception('Authentication credentials were not provided')
+
         ok = user_info.check_password(old_pwd)
         if ok:
             user_info.set_password(new_pwd)
@@ -44,7 +54,7 @@ class ChangeInfo(graphene.Mutation):
             ok = ok
             return ChangeInfo(ok=ok, user=user_info)
         else:
-            raise GraphQLError('change the password failed!')
+            raise GraphQLError('Password authentication failed!')
 
 
 class Mutation(graphene.ObjectType):
