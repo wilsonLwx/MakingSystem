@@ -22,3 +22,4 @@ class LeaderBannerAdmin(admin.ModelAdmin):
 admin.site.register(ClassBanner, ClassBannerAdmin)
 admin.site.register(Banner, BannerAdmin)
 admin.site.register(LeaderBanner, LeaderBannerAdmin)
+
