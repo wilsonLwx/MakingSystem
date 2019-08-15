@@ -6,7 +6,7 @@ from .models import Users, CollectInfo
 
 class UsersAdmin(admin.ModelAdmin):
     """用户管理后台"""
-    list_display = ['id', 'username', 'gender', 'mobile', 'is_superuser']
+    list_display = ['id', 'username', 'mobile', 'is_superuser']
 
 
 class CollectInfoAdmin(admin.ModelAdmin):
