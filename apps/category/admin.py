@@ -5,13 +5,13 @@ from .models import Banner, TestDetails, TestIn, TestName
 # Register your models here.
 class BannerAdmin(admin.ModelAdmin):
     """课程分类"""
-    list_display = ['title', 'url', 'image', 'add_time', 'is_show']
+    list_display = ['title', 'url', 'image', 'is_show', 'push_time']
 
 
 class TestDetailsAdmin(admin.ModelAdmin):
     """测试详情"""
-    list_display = ['title', 'first_class_name', 'second_class_name', 'image', 'url', 'test_number',
-                    'is_index_show', 'is_test_show', 'add_time', ]
+    list_display = ['title', 'parent_test_name', 'child_test_name', 'image', 'url', 'test_number',
+                    'is_index_show', 'is_class_show', 'push_time', ]
 
 
 class TestNameAdmin(admin.ModelAdmin):
@@ -21,7 +21,7 @@ class TestNameAdmin(admin.ModelAdmin):
 
 class TestInAdmin(admin.ModelAdmin):
     """分类页测试介绍"""
-    list_display = ['instruction', 'theory', 'notice']
+    list_display = ['introduce', 'theory', 'notice']
 
 
 admin.site.register(Banner, BannerAdmin)

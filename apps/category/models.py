@@ -22,13 +22,13 @@ class Banner(models.Model):
 
 class TestName(models.Model):
     """测评分类名称"""
-    name = models.CharField('测试名称', max_length=20, verbose_name='测试名称')
+    name = models.CharField(max_length=20, verbose_name='测试名称')
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subs', null=True, blank=True,
                                verbose_name='父级测试')
 
     class Meta:
-        verbose_name = '测评分类名称'
-        verbose_name_plural = '测评分类名称'
+        verbose_name = '测评分类'
+        verbose_name_plural = '测评分类'
 
     def __str__(self):
         return self.name
@@ -61,5 +61,5 @@ class TestIn(models.Model):
     notice = models.CharField('须知', max_length=500)
 
     class Meta:
-        verbose_name = '测试说明页'
-        verbose_name_plural = '测试说明页'
+        verbose_name = '测试说明'
+        verbose_name_plural = '测试说明'
