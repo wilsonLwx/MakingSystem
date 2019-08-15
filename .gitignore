@@ -3,10 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 .idea
-<<<<<<< HEAD
 *log
-=======
->>>>>>> 45c21908cb562e916e0514e21d839d7ac58e21a0
 # C extensions
 *.so
 
@@ -107,12 +104,9 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-# docker-compose
-docker-compose.yml
-Dockerfile
 
 # migr
 migrations/
-dev.py
+media/
 
 
