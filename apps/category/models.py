@@ -41,7 +41,7 @@ class TestDetails(models.Model):
     child_test_name = models.ForeignKey(TestName, on_delete=models.PROTECT,
                                         related_name='child_test_name', verbose_name='二级测试名称')
     title = models.CharField('标题', max_length=100)
-    image = models.ImageField('轮播图', upload_to='banner/%Y%m', max_length=100)
+    image = models.ImageField('轮播图', upload_to='index/%Y%m', max_length=100)
     url = models.URLField('链接地址', max_length=200)
     is_index_show = models.BooleanField('是否首页显示', default=True)
     is_class_show = models.BooleanField('是否分类页显示', default=True)
