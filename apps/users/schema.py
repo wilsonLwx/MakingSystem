@@ -92,7 +92,7 @@ class Register(graphene.Mutation):
             raise Exception("保存数据库失败")
         user.is_active = False
         user.save()
-        message="数据库保存成功"
+        message = "数据库保存成功"
         return Register(result=True, user=user, message=message)
 
 

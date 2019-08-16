@@ -15,7 +15,7 @@ class Users(AbstractUser):
 
     real_name = models.CharField("真实姓名", max_length=10, null=True)
     mobile = models.CharField("手机号", max_length=11)
-    gender = models.BooleanField("性别", choices=gender_choices, default="male")
+    gender = models.BooleanField("性别", max_length=20, choices=gender_choices, default=True)
     email = models.EmailField("邮箱", max_length=20, blank=True, null=True)
     school = models.CharField("学校", max_length=20, null=True)
     name = models.CharField("昵称", max_length=10)
@@ -28,15 +28,8 @@ class Users(AbstractUser):
 
     class Meta:
         db_table = 'Users'
+        verbose_name = '用户'
+        verbose_name_plural = '用户'
 
     def __str__(self):
         return Users.name
-
-
-
-
-
-
-
-
-
