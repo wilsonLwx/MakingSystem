@@ -1,6 +1,6 @@
-from django.contrib.auth.models import AbstractUser
 from django.db import models
 from datetime import datetime
+from DjangoUeditor.models import UEditorField
 
 
 # Create your models here.
@@ -56,9 +56,9 @@ class TestDetails(models.Model):
 
 class TestIn(models.Model):
     """测试说明页"""
-    introduce = models.CharField('介绍', max_length=500)
-    theory = models.CharField('理论', max_length=500)
-    notice = models.CharField('须知', max_length=500)
+    introduce = UEditorField('介绍', width=600, height=300,)
+    theory = UEditorField('理论', width=600, height=300,)
+    notice = UEditorField('须知', width=600, height=300,)
 
     class Meta:
         verbose_name = '测试说明'
