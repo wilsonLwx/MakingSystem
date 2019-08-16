@@ -15,11 +15,7 @@ class UserType(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-    users = graphene.List(UserType)
-
-    @graphene.resolve_only_args
-    def resolve_users(self):
-        return UserModel.objects.all()
+    pass
 
 
 class InputData(graphene.InputObjectType):

@@ -11,12 +11,13 @@ services:
       MYSQL_USER: odin_user
       MYSQL_PASSWORD: password1234
       MYSQL_DATABASE: django_dev
+      LANG: C.UTF-8
 
   web:
     build:
       context: .
       dockerfile: Dockerfile
-    command: bash -c "python manage.py makemigrations && python manage.py runserver 0.0.0.0:8000"
+    command: bash -c "sleep 5s && python manage.py migrate && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/app
     ports:
