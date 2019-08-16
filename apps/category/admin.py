@@ -21,7 +21,7 @@ class TestNameAdmin(admin.ModelAdmin):
 
 class TestInAdmin(admin.ModelAdmin):
     """分类页测试介绍"""
-    list_display = ['introduce', 'theory', 'notice', 'detail']
+    list_display = ['introduce', 'theory', 'notice']
 
 
 admin.site.register(Banner, BannerAdmin)

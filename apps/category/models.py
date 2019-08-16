@@ -56,10 +56,9 @@ class TestDetails(models.Model):
 
 class TestIn(models.Model):
     """测试说明页"""
-    introduce = models.CharField('介绍', max_length=500)
-    theory = models.CharField('理论', max_length=500)
-    notice = models.CharField('须知', max_length=500)
-    detail = UEditorField('课程详情', width=600, height=300,)
+    introduce = UEditorField('介绍', width=600, height=300,)
+    theory = UEditorField('理论', width=600, height=300,)
+    notice = UEditorField('须知', width=600, height=300,)
 
     class Meta:
         verbose_name = '测试说明'
