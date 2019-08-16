@@ -1,12 +1,19 @@
 # __author__ = 'wilsonLwx'
 # __date__ = '2019/08/08'
+import random
+import re
 
 from graphql import GraphQLError
+
+# from utils.yuntongxun.SendTemplateSMS import CCP
 from .models import Users as UserModel
 from graphene_django import DjangoObjectType
 import graphene
 from django import db
 import requests
+import logging
+
+LOG = logging.getLogger(__file__)
 
 
 class UserType(DjangoObjectType):
@@ -185,8 +192,57 @@ class Wxauthor(graphene.Mutation):
                 return Wxauthor(result=False, openid=openid, message="用户未授权")
 
 
+class MobileVerifyData(graphene.InputObjectType):
+    phoneNum = graphene.String(required=True)
+    verifyNum = graphene.String(required=True)
+
+
+class MobileVerify(graphene.Mutation):
+    class Arguments:
+        mobileverifydata = MobileVerifyData(required=True)
+    result = graphene.Boolean()
+    message = graphene.String()
+
+    def mutate(self, info, *args, **kwargs):
+        mobileverifydata = kwargs.get('mobileverifydata')
+        phone_num = mobileverifydata.get('phoneNum')
+        verify_num = mobileverifydata.get('verifyNum')
+        if not re.match(r'1[345678]\d{9}', phone_num):
+            return MobileVerify(result=False, message="手机号码不是11位")
+        if not all([phone_num, verify_num]):
+            return MobileVerify(result=False, message="参数不完整")
+        # 查找数据库是否注册过
+        user_info = UserModel()
+        try:
+            user = user_info.objects.get(mobile=phone_num)
+        except Exception as e:
+            LOG.info('用户未注册')
+        else:
+            if user is not None:
+                return MobileVerify(result=True, message="用户已注册")
+
+        sms_code = '%06d' % random.randint(0, 999999)
+
+        # try:
+        #     ccp = CCP()
+        #     result = ccp.sendTemplateSMS(phone_num, [sms_code, '5'], 1)
+        # except Exception as e:
+        #     LOG.error(e)
+        #     return MobileVerify(result=False, message="发送短信异常")
+        result = 0
+        if result == 0:
+            LOG.error("!"*10)
+            print("@"*10)
+            return MobileVerify(result=True, message="发送短信成功")
+        else:
+            return MobileVerify(result=False, message="发送短信失败")
+
+
+
+
 class Mutation(graphene.ObjectType):
     change_info = ChangeInfo.Field()
     register = Register.Field()
     login = Login.Field()
     wxauthor = Wxauthor.Field()
+    mobileverify = MobileVerify.Field()
