@@ -107,3 +107,12 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+# docker-compose
+docker-compose.yml
+Dockerfile
+
+# migr
+migrations/
+dev.py
+
+

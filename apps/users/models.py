@@ -33,3 +33,14 @@ class Users(AbstractUser):
 
     def __str__(self):
         return Users.name
+
+
+class CollectInfo(models.Model):
+    """统计信息"""
+    registration = models.IntegerField("注册量", max_length=10, default=0)
+    upload_number = models.IntegerField("上传报告数量", max_length=10, default=0)
+    read_number = models.IntegerField("阅读报告数量", max_length=10, default=0)
+
+    class Meta:
+        verbose_name = '数据统计'
+        verbose_name_plural = verbose_name
