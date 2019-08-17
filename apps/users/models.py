@@ -15,7 +15,7 @@ class Users(AbstractUser):
 
     openid = models.CharField("用户唯一码", max_length=100, null=True)
     mobile = models.CharField("手机号", max_length=11)
-    # gender = models.BooleanField("性别", max_length=20, choices=gender_choices, default=True)
+    # gender = models.CharField("性别", max_length=20, choices=gender_choices, default='male')
     # email = models.EmailField("邮箱", max_length=20, blank=True, null=True)
     # school = models.CharField("学校", max_length=20, null=True)
     name = models.CharField("昵称", max_length=10, null=True)
@@ -25,7 +25,7 @@ class Users(AbstractUser):
     # grade = models.CharField("年级", max_length=10, null=True)
     # education = models.CharField("学历", max_length=10, null=True)
     # vocation = models.CharField("意向行业", max_length=20, null=True)
-    # img_url = models.ImageField('头像')
+    image = models.ImageField('用户头像', upload_to='image/%Y%m', default='image/default.png', max_length=100)
 
     class Meta:
         db_table = 'Users'
