@@ -7,9 +7,10 @@ import graphql_jwt
 from graphene_django.debug import DjangoDebug
 
 import users.schema
+import category.schema
 
 
-class Query(users.schema.Query, graphene.ObjectType):
+class Query(users.schema.Query, category.schema.Query, graphene.ObjectType):
     debug = graphene.Field(DjangoDebug, name='_debug')
 
 
