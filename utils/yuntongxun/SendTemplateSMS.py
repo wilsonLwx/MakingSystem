@@ -44,12 +44,22 @@ class CCP(object):
         return cls.instance
 
     def sendTemplateSMS(self, to, datas, tempId):
+        status_Code = None
         try:
-            result = self.rest.sendTemplateSMS(to,datas,tempId)
+            result = self.rest.sendTemplateSMS(to, datas, tempId)
         except Exception as e:
             LOG.error(e)
             # raise e
-        status_Code = result.get('statusCode')
+        # else:
+        #    for k,v in result.items():
+        #
+        #         if k=='templateSMS':
+        #             for k,s in v.items():
+        #                 print('%s:%s' % (k, s))
+        #         else:
+        #             print('%s:%s' % (k, v))
+        else:
+            status_Code = result.get('statusCode')
 
         return 0 if status_Code == '000000' else -1
 
@@ -60,5 +70,4 @@ ccp = CCP()
 
 if __name__ == '__main__':
     ccp = CCP()
-    result = ccp.sendTemplateSMS('13205827585', ["123456", 5], 1)
-    print(result)
+    ccp.sendTemplateSMS('13205827585', ["123456", 5], 1)
