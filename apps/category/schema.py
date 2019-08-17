@@ -1,9 +1,9 @@
 # __author__ = 'ly'
 # __date__ = '2019/08/15'
-
+from datetime import datetime
 import graphene
-from graphene_django import DjangoObjectType
 
+from .models import Banner as BannerModel
 from .models import TestDetails as TestDetailsModel
 from .models import TestName as TestNameModel
 from .models import Banner as BannerModel
@@ -17,7 +17,12 @@ class LeaderTestInfo(graphene.ObjectType):
     title = graphene.String()
     image = graphene.String()
     des = graphene.String()
-    test_number
+
+
+class LeaderTestInfo(graphene.ObjectType):
+    url = graphene.String()
+    title = graphene.String()
+    image = graphene.String()
 
 
 class LeaderTestType(graphene.ObjectType):
@@ -37,8 +42,12 @@ class Query:
     courses = graphene.Field(BannerType)
     indexbanners = graphene.Field(IndexBannerType)
 
+
+class Query:
+    leader_test = graphene.Field(LeaderTestType)
+    courses = graphene.Field(LeaderTestInfo)
+
     def resolve_leader_test(self, info):
-        # 首页---领导力测评
         leader_test_obj = TestDetailsModel.objects.filter(is_index_show=True, push_time__lt=datetime.now())
         banner_info = leader_test_obj.values_list('title', 'url', 'image')
         return LeaderTestType(group=[LeaderTestInfo(title=i[0], url=i[1], image=i[2]) for i in banner_info])

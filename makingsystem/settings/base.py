@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'graphene_django',
     'users',
     'category',
+    'pdf',
     'DjangoUeditor',
 ]
 
@@ -155,6 +156,9 @@ STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # 指定根目录
+
+FILE_URL = 'static/%Y%m/files/'
+FILE_ROOT = os.path.join(BASE_DIR, FILE_URL)
 
 LOGGING_CONFIG = None
 
