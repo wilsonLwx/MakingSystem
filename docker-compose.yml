@@ -1,5 +1,15 @@
 version: '3'
 services:
+
+  redis:
+    image: redis
+    container_name: my_redis
+    command: redis-server --requirepass 123456
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data:/data
+
   mariadb:
     image: mariadb:10.4.7
     expose:
@@ -24,4 +34,5 @@ services:
       - "9090:8000"
     links:
       - mariadb
+      - redis
 

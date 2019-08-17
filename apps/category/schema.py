@@ -6,19 +6,51 @@ from graphene_django import DjangoObjectType
 
 from .models import TestDetails as TestDetailsModel
 from .models import TestName as TestNameModel
+from .models import Banner as BannerModel
+from datetime import datetime
+from makingsystem.settings.base import MEDIA_ROOT
 
 
-class TestNameType(graphene.ObjectType):
-    names = graphene.List(graphene.String)
-    urls = graphene.List(graphene.String)
+class LeaderTestInfo(graphene.ObjectType):
+    name = graphene.String()
+    url = graphene.String()
+    title = graphene.String()
+    image = graphene.String()
+    des = graphene.String()
+    test_number
+
+
+class LeaderTestType(graphene.ObjectType):
+    group = graphene.List(LeaderTestInfo)
+
+
+class BannerType(LeaderTestType):
+    pass
+
+
+class IndexBannerType(LeaderTestType):
+    pass
 
 
 class Query:
+    leader_test = graphene.Field(LeaderTestType)
+    courses = graphene.Field(BannerType)
+    indexbanners = graphene.Field(IndexBannerType)
 
-    banners = graphene.Field(TestNameType)
+    def resolve_leader_test(self, info):
+        # 首页---领导力测评
+        leader_test_obj = TestDetailsModel.objects.filter(is_index_show=True, push_time__lt=datetime.now())
+        banner_info = leader_test_obj.values_list('title', 'url', 'image')
+        return LeaderTestType(group=[LeaderTestInfo(title=i[0], url=i[1], image=i[2]) for i in banner_info])
 
-    def resolve_banners(self, info):
-        banners_obj = TestDetailsModel.objects.filter(is_index_show=True)
-        banner_names = banners_obj.values_list('parent_test_name__name', flat=True)
-        banner_urls = banners_obj.values_list('url', flat=True)
-        return TestNameType(names=banner_names, urls=banner_urls)
+    def resolve_courses(self, info):
+        # 首页---课程分类
+        banner_obj = BannerModel.objects.filter(is_show=True, push_time__lt=datetime.now())
+        banner_info = banner_obj.values_list('title', 'url', 'image')
+        return LeaderTestType(group=[LeaderTestInfo(title=i[0], url=i[1], image=i[2]) for i in banner_info])
+
+    def resolve_indexbanners(self, info):
+        # 首页 第一部分 轮播图
+        leader_test_obj = TestDetailsModel.objects.filter(is_index_show=True, push_time__lt=datetime.now())
+        banner_info = leader_test_obj.values_list('title', 'url', 'image')
+        return IndexBannerType(group=[LeaderTestInfo(title=i[0], url=i[1], image=i[2]) for i in banner_info])
