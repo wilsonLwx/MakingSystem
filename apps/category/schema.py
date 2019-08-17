@@ -1,24 +1,32 @@
 # __author__ = 'ly'
 # __date__ = '2019/08/15'
-
+from datetime import datetime
 import graphene
-from graphene_django import DjangoObjectType
 
+from .models import Banner as BannerModel
 from .models import TestDetails as TestDetailsModel
-from .models import TestName as TestNameModel
 
 
-class TestNameType(graphene.ObjectType):
-    names = graphene.List(graphene.String)
-    urls = graphene.List(graphene.String)
+class LeaderTestInfo(graphene.ObjectType):
+    url = graphene.String()
+    title = graphene.String()
+    image = graphene.String()
+
+
+class LeaderTestType(graphene.ObjectType):
+    group = graphene.List(LeaderTestInfo)
 
 
 class Query:
+    leader_test = graphene.Field(LeaderTestType)
+    courses = graphene.Field(LeaderTestInfo)
 
-    banners = graphene.Field(TestNameType)
+    def resolve_leader_test(self, info):
+        leader_test_obj = TestDetailsModel.objects.filter(is_index_show=True, push_time__lt=datetime.now())
+        banner_info = leader_test_obj.values_list('title', 'url', 'image')
+        return LeaderTestType(group=[LeaderTestInfo(title=i[0], url=i[1], image=i[2]) for i in banner_info])
 
-    def resolve_banners(self, info):
-        banners_obj = TestDetailsModel.objects.filter(is_index_show=True)
-        banner_names = banners_obj.values_list('parent_test_name__name', flat=True)
-        banner_urls = banners_obj.values_list('url', flat=True)
-        return TestNameType(names=banner_names, urls=banner_urls)
+    def resolve_courses(self, info):
+        banner_obj = BannerModel.objects.filter(is_show=True, push_time__lt=datetime.now())
+        banner_info = banner_obj.values_list('title', 'url', 'image')
+        return LeaderTestType(group=[LeaderTestInfo(title=i[0], url=i[1], image=i[2]) for i in banner_info])
