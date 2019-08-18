@@ -5,10 +5,10 @@ https://oss.console.aliyun.com/overview
 创建用户 赋予AMS OSS访问权限
 https://help.aliyun.com/document_detail/31837.html?spm=a2c4g.11186623.2.12.3e936c40MumyJx#concept-zt4-cvy-5db
 """
-AccessKeyId = None # 新建用户时可以查看
-AccessKeySecret = None # 新建用户时可以查看
-Endpoint = None # 节点名 例如 oss-cn-beijing.aliyuncs.com
-bucketName =None # 存储空间名
+AccessKeyId = 'LTAIeFNriSXX6ySq' # 新建用户时可以查看
+AccessKeySecret = 'QHdxPWx7JU9q6Y55D3feQxlwcfZb66' # 新建用户时可以查看
+Endpoint = 'oss-cn-beijing.aliyuncs.com' # 节点名 例如 oss-cn-beijing.aliyuncs.com
+bucketName ='hwihome' # 存储空间名
 # bucketName1 = None
 
 """

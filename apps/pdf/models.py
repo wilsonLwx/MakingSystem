@@ -9,7 +9,7 @@ class PDF(models.Model):
     """PDF"""
     from users.models import Users
     name = models.CharField("PDF名称", max_length=100)
-    aliosspath = models.CharField("阿里云路径", max_length=100)
+    aliosspath = models.TextField("阿里云路径", max_length=500)
     user = models.ForeignKey(Users, on_delete=models.CASCADE, verbose_name="PDF用户")
 
 
