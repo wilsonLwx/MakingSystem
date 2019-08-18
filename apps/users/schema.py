@@ -106,6 +106,7 @@ class LoginData(graphene.InputObjectType):
     mobile = graphene.String(required=True)
     smsCode = graphene.String(required=True)
 
+
 #
 # class Login(graphene.Mutation):
 #     class Arguments:
@@ -141,7 +142,8 @@ class WxauthorData(graphene.InputObjectType):
 
 class Wxauthor(graphene.Mutation):
     class Arguments:
-         wxauthordata = WxauthorData(required=True)
+        wxauthordata = WxauthorData(required=True)
+
     result = graphene.Boolean()
     openid = graphene.String()
     message = graphene.String()
@@ -198,9 +200,11 @@ class Wxauthor(graphene.Mutation):
 class MobileVerifyData(graphene.InputObjectType):
     phoneNum = graphene.String(required=True)
 
+
 class MobileVerify(graphene.Mutation):
     class Arguments:
         mobileverifydata = MobileVerifyData(required=True)
+
     result = graphene.Boolean()
     message = graphene.String()
 
