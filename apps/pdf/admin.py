@@ -13,5 +13,6 @@ class PDFuploadAdmin(admin.ModelAdmin):
     list_display = ['file', 'name']
 
 
+admin.site.register(PDFupload, PDFuploadAdmin)
 admin.site.site_header = '管理后台'
 admin.site.site_title = '大学生领导力潜质研究院'
