@@ -84,8 +84,7 @@ class Register(graphene.Mutation):
         if not all([smsCode, mobile]):
             raise GraphQLError("有空信息输入")
 
-        user_info = UserModel()
-        if user_info.objects.filter(mobile=mobile):
+        if UserModel.objects.filter(mobile=mobile).first():
             return Register(result=True, message="用户已注册")
 
         context = cache.get(mobile)
@@ -99,7 +98,7 @@ class Register(graphene.Mutation):
             raise Exception("保存数据库失败")
         user.is_active = True
         user.save()
-        # cache.delete('smsCode')
+        cache.delete('smsCode')
         return Register(result=True, message="用户保存成功")
 
 
@@ -198,8 +197,6 @@ class Wxauthor(graphene.Mutation):
 
 class MobileVerifyData(graphene.InputObjectType):
     phoneNum = graphene.String(required=True)
-    # verifyNum = graphene.String(required=True)
-
 
 class MobileVerify(graphene.Mutation):
     class Arguments:
@@ -216,29 +213,26 @@ class MobileVerify(graphene.Mutation):
         # if not all([phone_num, verify_num]):
         #     return MobileVerify(result=False, message="参数不完整")
         # 查找数据库是否注册过
-        user_info = UserModel()
         try:
-            user = user_info.objects.get(mobile=phone_num)
+            user = UserModel.objects.get(mobile=phone_num)
         except Exception as e:
             LOG.info('用户未注册')
         else:
             if user is not None:
                 return MobileVerify(result=True, message="用户已注册")
 
-        # smsCode = '%06d' % random.randint(0, 999999)
-        smsCode = '123456'
+        smsCode = '%06d' % random.randint(0, 999999)
         if cache.get(phone_num):
             LOG.debug(cache.get(phone_num))
             return MobileVerify(result=True, message="验证码未过期")
-        # try:
-        #     ccp = CCP()
-        #     result = ccp.sendTemplateSMS(phone_num, [smsCode, '5'], 1)
-        # except Exception as e:
-        #     LOG.error(e)
-        #     return MobileVerify(result=False, message="发送短信异常")
+        try:
+            ccp = CCP()
+            result = ccp.sendTemplateSMS(phone_num, [smsCode, '5'], 1)
+        except Exception as e:
+            LOG.error(e)
+            return MobileVerify(result=False, message="发送短信异常")
 
         cache.set(phone_num, smsCode, 500)
-        result = 0
         if result == 0:
             return MobileVerify(result=True, message="发送短信成功")
         else:
