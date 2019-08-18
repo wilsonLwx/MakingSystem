@@ -1,15 +1,15 @@
+# encoding:utf-8
 from django.test import TestCase
 
 # Create your tests here.
-
 import oss2
 # 用户登录名称 object-oss@1463266644828335.onaliyun.com
 # AccessKey ID LTAIeFNriSXX6ySq
 # AccessKeySecret QHdxPWx7JU9q6Y55D3feQxlwcfZb66
 auth = oss2.Auth('LTAIeFNriSXX6ySq', 'QHdxPWx7JU9q6Y55D3feQxlwcfZb66')
-
-file_name = '/home/hw/test.pdf'
-
+#
+# file_name = '/home/hw/test.pdf'
+#
 bucket = oss2.Bucket(auth, 'oss-cn-beijing.aliyuncs.com', 'hwihome')
 
 # result = bucket.put_object_from_file('home/hw/test.pdf', file_name)
@@ -30,7 +30,22 @@ bucket = oss2.Bucket(auth, 'oss-cn-beijing.aliyuncs.com', 'hwihome')
 #     print(b.last_modified)
 #     print(b.etag)
 #     print(b.storage_class)
+#
+# pdf_url = bucket.sign_url('GET', 'home/hw/test.pdf', 200)
+#
+# print(pdf_url)
 
-pdf_url = bucket.sign_url('GET', 'home/hw/test.pdf', 200)
 
-print(pdf_url)
+import zipfile
+
+zfile = zipfile.ZipFile("/home/hw/MakingSystem/media/PDF/testPDF.zip", 'r')
+
+for fileN in zfile.namelist():
+    if fileN.endswith('/'):
+        continue
+    print(fileN.encode('cp437').decode('gbk'))
+    name = fileN.encode('cp437').decode('gbk')
+    data = zfile.read(fileN)
+    # bucket.put_object(name, data)
+    url = bucket.sign_url('GET', name, 200)
+    print(url)
