@@ -3,7 +3,7 @@ import time
 import logging
 from utils.log import log
 from makingsystem.settings import config
-from .uploadaaliyun import Xfer
+from .uploadaliyun import Xfer
 log.initLogConf()
 LOG = logging.getLogger(__file__)
 
@@ -15,7 +15,7 @@ from watchdog.events import FileSystemEventHandler
 class MyHandler(FileSystemEventHandler):
 
     def __init__(self):
-        self.xfer = Xfer(config.AccessKeyId, config.AccessKeySecret, config.Endpoint, config.bucketName)
+        self.xfer = Xfer()
 
     def on_any_event(self, event):
         if event.is_directory:
