@@ -2,16 +2,17 @@ from django.db import models
 from datetime import datetime
 from DjangoUeditor.models import UEditorField
 from makingsystem.settings import base
+
+
 # Create your models here.
 
 
 class PDF(models.Model):
     """PDF"""
-    from apps.users.models import Users
+    from users.models import Users
     name = models.CharField("PDF名称", max_length=100)
     aliosspath = models.CharField("阿里云路径", max_length=100)
-    user = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='mobile', verbose_name="PDF用户")
-
+    user = models.ForeignKey(Users, on_delete=models.CASCADE, verbose_name="PDF用户")
 
     class Meta:
         verbose_name = "PDF"
