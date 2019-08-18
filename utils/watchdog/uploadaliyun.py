@@ -3,8 +3,6 @@ import re
 
 import oss2
 import zipfile
-from apps.users.models import Users
-from apps.pdf.models import PDF
 from makingsystem.settings import config
 # 用户登录名称 object-oss@1463266644828335.onaliyun.com
 # AccessKey ID LTAIeFNriSXX6ySq
@@ -12,6 +10,7 @@ from makingsystem.settings import config
 
 import logging
 from utils.log import log
+
 log.initLogConf()
 
 LOG = logging.getLogger(__file__)
@@ -50,7 +49,7 @@ class Xfer(object):
     def upload(self, localpath):
         if not os.path.isfile(localpath):
             return
-        LOG.info(f'{"+"*10}uploading {"+"*10}')
+        LOG.info(f'{"+" * 10}uploading {"+" * 10}')
         zfile = zipfile.ZipFile(localpath, 'r')
         for fileN in zfile.namelist():
             if fileN.endswith('/'):
@@ -73,7 +72,7 @@ class Xfer(object):
             pass
 
     def sign_url(self, name):
-        url = self.bucket.sign_url('GET', name, 60*30)
+        url = self.bucket.sign_url('GET', name, 60 * 30)
         return url
 
 

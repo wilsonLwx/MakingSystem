@@ -106,7 +106,6 @@ class LoginData(graphene.InputObjectType):
     mobile = graphene.String(required=True)
     smsCode = graphene.String(required=True)
 
-
 class WxauthorData(graphene.InputObjectType):
     code = graphene.String()
     openid = graphene.String()
@@ -114,7 +113,8 @@ class WxauthorData(graphene.InputObjectType):
 
 class Wxauthor(graphene.Mutation):
     class Arguments:
-         wxauthordata = WxauthorData(required=True)
+        wxauthordata = WxauthorData(required=True)
+
     result = graphene.Boolean()
     openid = graphene.String()
     message = graphene.String()
@@ -171,9 +171,11 @@ class Wxauthor(graphene.Mutation):
 class MobileVerifyData(graphene.InputObjectType):
     phoneNum = graphene.String(required=True)
 
+
 class MobileVerify(graphene.Mutation):
     class Arguments:
         mobileverifydata = MobileVerifyData(required=True)
+
     result = graphene.Boolean()
     message = graphene.String()
 
@@ -215,6 +217,5 @@ class MobileVerify(graphene.Mutation):
 class Mutation(graphene.ObjectType):
     change_info = ChangeInfo.Field()
     register = Register.Field()
-    # login = Login.Field()
     wxauthor = Wxauthor.Field()
     mobileverify = MobileVerify.Field()
