@@ -106,33 +106,6 @@ class LoginData(graphene.InputObjectType):
     mobile = graphene.String(required=True)
     smsCode = graphene.String(required=True)
 
-#
-# class Login(graphene.Mutation):
-#     class Arguments:
-#         login_data = LoginData(required=True)
-#
-#     result = graphene.Boolean()
-#     user = graphene.Field(UserType)
-#     message = graphene.String()
-#
-#     def mutate(self, info, *args, **kwargs):
-#         login_data = kwargs.get('login_data')
-#         mobile = login_data.get('mobile')
-#         smsCode = login_data.get('smsCode')
-#         if not all([mobile, smsCode]):
-#             raise GraphQLError("有空信息输入")
-#         try:
-#             user = UserModel.objects.get(mobile=mobile)
-#         except Exception as e:
-#             raise GraphQLError("手机号错误")
-#         if not user.check_password(passwd):
-#             raise GraphQLError("密码错误")
-#         if not user.is_authenticated:
-#             raise GraphQLError(f"{user}用户名或密码错误")
-#         # login(info.context, user)
-#         message = "登录成功"
-#         return Login(result=True, user=user, message=message)
-
 
 class WxauthorData(graphene.InputObjectType):
     code = graphene.String()
