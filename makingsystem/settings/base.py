@@ -167,9 +167,3 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # 指定根目录
 FILE_URL = 'PDF/%Y%m%d/'
 FILE_ROOT = os.path.join(BASE_DIR, FILE_URL)
 
-LOGGING_CONFIG = None
-
-import logging.config
-from utils.log.log import LOGGING
-
-logging.config.dictConfig(LOGGING)

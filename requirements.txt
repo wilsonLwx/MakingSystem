@@ -20,4 +20,5 @@ singledispatch==3.4.0.3
 six==1.12.0
 sqlparse==0.3.0
 urllib3==1.21.1
-oss2
+oss2==2.8.0
+watchdog==0.9.0
