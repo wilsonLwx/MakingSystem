@@ -25,7 +25,7 @@ urllib2 = urllib.request
 
 import json
 # from xmltojson import xmltojson
-from xmltojson import xmltojson
+from .xmltojson import xmltojson
 from xml.dom import minidom
 <<<<<<< HEAD
 =======

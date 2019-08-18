@@ -5,10 +5,12 @@ import re
 
 from graphql import GraphQLError
 
-# from utils.yuntongxun.SendTemplateSMS import CCP
+from utils.yuntongxun.SendTemplateSMS import CCP
 from .models import Users as UserModel
+
 from graphene_django import DjangoObjectType
 import graphene
+from django.core.cache import cache
 from django import db
 import requests
 import logging
@@ -63,72 +65,73 @@ class ChangeInfo(graphene.Mutation):
 
 
 class RegisterData(graphene.InputObjectType):
-    name = graphene.String(required=True)
-    passwd = graphene.String(required=True)
     mobile = graphene.String(required=True)
+    smsCode = graphene.String(required=True)
 
 
 class Register(graphene.Mutation):
     class Arguments:
-        register_data = RegisterData(required=True)
+        registerData = RegisterData(required=True)
 
     result = graphene.Boolean()
-    user = graphene.Field(UserType)
     message = graphene.String()
 
     def mutate(self, info, *args, **kwargs):
-        register_data = kwargs.get('register_data')
-        name = register_data.get('name')
-        passwd = register_data.get('passwd')
+        register_data = kwargs.get('registerData')
+        smsCode = register_data.get('smsCode')
         mobile = register_data.get('mobile')
-        user_info = UserModel.objects.filter(mobile=mobile)
-        if user_info:
-            message = "用户已注册"
-            return Register(reslut=False, user=user_info, message=message)
 
-        if not all([name, passwd, mobile]):
+        if not all([smsCode, mobile]):
             raise GraphQLError("有空信息输入")
 
+        if UserModel.objects.filter(mobile=mobile).first():
+            return Register(result=True, message="用户已注册")
+
+        context = cache.get(mobile)
+        if not context:
+            return Register(result=False, message="验证码已过期")
+        if smsCode != context:
+            return Register(result=False, message="验证码不匹配，请重新输入")
         try:
-            user = UserModel.objects.create_user(username=name, password=passwd, mobile=mobile)
+            user = UserModel.objects.create(mobile=mobile)
         except db.IntegrityError:
             raise Exception("保存数据库失败")
-        user.is_active = False
+        user.is_active = True
         user.save()
-        message = "数据库保存成功"
-        return Register(result=True, user=user, message=message)
+        cache.delete('smsCode')
+        return Register(result=True, message="用户保存成功")
 
 
 class LoginData(graphene.InputObjectType):
     mobile = graphene.String(required=True)
-    passwd = graphene.String(required=True)
+    smsCode = graphene.String(required=True)
 
-
-class Login(graphene.Mutation):
-    class Arguments:
-        login_data = LoginData(required=True)
-
-    result = graphene.Boolean()
-    user = graphene.Field(UserType)
-    message = graphene.String()
-
-    def mutate(self, info, *args, **kwargs):
-        login_data = kwargs.get('login_data')
-        mobile = login_data.get('mobile')
-        passwd = login_data.get('passwd')
-        if not all([mobile, passwd]):
-            raise GraphQLError("有空信息输入")
-        try:
-            user = UserModel.objects.get(mobile=mobile)
-        except Exception as e:
-            raise GraphQLError("手机号错误")
-        if not user.check_password(passwd):
-            raise GraphQLError("密码错误")
-        if not user.is_authenticated:
-            raise GraphQLError(f"{user}用户名或密码错误")
-        # login(info.context, user)
-        message = "登录成功"
-        return Login(result=True, user=user, message=message)
+#
+# class Login(graphene.Mutation):
+#     class Arguments:
+#         login_data = LoginData(required=True)
+#
+#     result = graphene.Boolean()
+#     user = graphene.Field(UserType)
+#     message = graphene.String()
+#
+#     def mutate(self, info, *args, **kwargs):
+#         login_data = kwargs.get('login_data')
+#         mobile = login_data.get('mobile')
+#         smsCode = login_data.get('smsCode')
+#         if not all([mobile, smsCode]):
+#             raise GraphQLError("有空信息输入")
+#         try:
+#             user = UserModel.objects.get(mobile=mobile)
+#         except Exception as e:
+#             raise GraphQLError("手机号错误")
+#         if not user.check_password(passwd):
+#             raise GraphQLError("密码错误")
+#         if not user.is_authenticated:
+#             raise GraphQLError(f"{user}用户名或密码错误")
+#         # login(info.context, user)
+#         message = "登录成功"
+#         return Login(result=True, user=user, message=message)
 
 
 class WxauthorData(graphene.InputObjectType):
@@ -194,8 +197,6 @@ class Wxauthor(graphene.Mutation):
 
 class MobileVerifyData(graphene.InputObjectType):
     phoneNum = graphene.String(required=True)
-    verifyNum = graphene.String(required=True)
-
 
 class MobileVerify(graphene.Mutation):
     class Arguments:
@@ -206,43 +207,41 @@ class MobileVerify(graphene.Mutation):
     def mutate(self, info, *args, **kwargs):
         mobileverifydata = kwargs.get('mobileverifydata')
         phone_num = mobileverifydata.get('phoneNum')
-        verify_num = mobileverifydata.get('verifyNum')
+        # verify_num = mobileverifydata.get('verifyNum')
         if not re.match(r'1[345678]\d{9}', phone_num):
             return MobileVerify(result=False, message="手机号码不是11位")
-        if not all([phone_num, verify_num]):
-            return MobileVerify(result=False, message="参数不完整")
+        # if not all([phone_num, verify_num]):
+        #     return MobileVerify(result=False, message="参数不完整")
         # 查找数据库是否注册过
-        user_info = UserModel()
         try:
-            user = user_info.objects.get(mobile=phone_num)
+            user = UserModel.objects.get(mobile=phone_num)
         except Exception as e:
             LOG.info('用户未注册')
         else:
             if user is not None:
                 return MobileVerify(result=True, message="用户已注册")
 
-        sms_code = '%06d' % random.randint(0, 999999)
+        smsCode = '%06d' % random.randint(0, 999999)
+        if cache.get(phone_num):
+            LOG.debug(cache.get(phone_num))
+            return MobileVerify(result=True, message="验证码未过期")
+        try:
+            ccp = CCP()
+            result = ccp.sendTemplateSMS(phone_num, [smsCode, '5'], 1)
+        except Exception as e:
+            LOG.error(e)
+            return MobileVerify(result=False, message="发送短信异常")
 
-        # try:
-        #     ccp = CCP()
-        #     result = ccp.sendTemplateSMS(phone_num, [sms_code, '5'], 1)
-        # except Exception as e:
-        #     LOG.error(e)
-        #     return MobileVerify(result=False, message="发送短信异常")
-        result = 0
+        cache.set(phone_num, smsCode, 500)
         if result == 0:
-            LOG.error("!"*10)
-            print("@"*10)
             return MobileVerify(result=True, message="发送短信成功")
         else:
             return MobileVerify(result=False, message="发送短信失败")
 
 
-
-
 class Mutation(graphene.ObjectType):
     change_info = ChangeInfo.Field()
     register = Register.Field()
-    login = Login.Field()
+    # login = Login.Field()
     wxauthor = Wxauthor.Field()
     mobileverify = MobileVerify.Field()

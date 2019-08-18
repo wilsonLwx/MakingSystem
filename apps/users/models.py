@@ -45,3 +45,4 @@ class CollectInfo(models.Model):
     class Meta:
         verbose_name = '数据统计'
         verbose_name_plural = verbose_name
+
