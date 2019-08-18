@@ -5,6 +5,7 @@ import oss2
 import zipfile
 from apps.users.models import Users
 from apps.pdf.models import PDF
+from makingsystem.settings import config
 # 用户登录名称 object-oss@1463266644828335.onaliyun.com
 # AccessKey ID LTAIeFNriSXX6ySq
 # AccessKeySecret QHdxPWx7JU9q6Y55D3feQxlwcfZb66
@@ -19,14 +20,14 @@ LOG = logging.getLogger(__file__)
 
 class Xfer(object):
 
-    def __init__(self, AccessKeyId, AccessKeySecret, Endpoint, bucketName):
+    def __init__(self):
 
         self.auth = None
         self.bucket = None
-        self.AccessKeyId = AccessKeyId
-        self.ACCessKeySecret = AccessKeySecret
-        self.Endpoint = Endpoint
-        self.bucketName = bucketName
+        self.AccessKeyId = config.AccessKeyId
+        self.ACCessKeySecret = config.AccessKeySecret
+        self.Endpoint = config.Endpoint
+        self.bucketName = config.bucketName
 
     def initAliyun(self):
         if self.auth is None:
