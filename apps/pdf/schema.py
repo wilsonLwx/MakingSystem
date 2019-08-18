@@ -29,7 +29,6 @@ class Query(graphene.ObjectType):
             for i in ret:
                 path = i.get('aliosspath')
                 name = i.get('name')
-                print(path, name)
                 url = x.sign_url(path)
                 r.name = name
                 r.url = url
