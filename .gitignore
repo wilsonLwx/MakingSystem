@@ -107,5 +107,6 @@ venv.bak/
 # migr
 migrations/
 media/
+dev.py
 
 

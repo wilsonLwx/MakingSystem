@@ -9,7 +9,7 @@ from makingsystem.settings import config
 # 用户登录名称 object-oss@1463266644828335.onaliyun.com
 # AccessKey ID LTAIeFNriSXX6ySq
 # AccessKeySecret QHdxPWx7JU9q6Y55D3feQxlwcfZb66
-
+from django.db import connection
 import logging
 from utils.log import log
 
@@ -17,6 +17,7 @@ log.initLogConf()
 
 LOG = logging.getLogger(__file__)
 
+cursor = connection.cursor()
 
 class Xfer(object):
 
@@ -49,13 +50,18 @@ class Xfer(object):
             name = fileN.encode('cp437').decode('gbk')
             mobile = re.compile('1[345678]\d{9}')
             mobileNum = mobile.search(name)
-            if not Users.objects.filter(mobile=mobileNum).first():
-                LOG.error(f"用户不存在")
-            PDFInfo = PDF()
-            PDFInfo.name = name.split('/')[-1]
-            PDFInfo.aliosspath = name
-            PDFInfo.user = mobileNum
-            PDFInfo.save()
+            # if not Users.objects.filter(mobile=mobileNum).first():
+            #     LOG.error(f"用户不存在")
+            # PDFInfo = PDF()
+            # PDFInfo.name = name.split('/')[-1]
+            # PDFInfo.aliosspath = name
+            # PDFInfo.user = mobileNum
+            # PDFInfo.save()
+            cursor.execute('select * from Users where mobile=%s', mobileNum)
+            raw = cursor.fetchone()
+            if not raw:
+                LOG.error(f'用户不存在')
+            cursor.execute('insert into Users(name, aliosspath, user) values (%s, %s, %s)' % (name.split('/')[-1], name, mobileNum))
             data = zfile.read(fileN)
             self.bucket.put_object(name, data)
         try:

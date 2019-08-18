@@ -18,7 +18,7 @@ DATABASES = {
 #         'USER': 'root',
 #         'NAME': 'make_system',
 #         'HOST': '127.0.0.1',
-#         'PORT': 53306,
+#         'PORT': 3306,
 #         'PASSWORD': 'mysql',
 #     }
 # }
