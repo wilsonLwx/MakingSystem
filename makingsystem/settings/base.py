@@ -125,19 +125,26 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "PASSWORD": "123456"
-        }
-    }
-}
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": "redis://127.0.0.1:6379/1",
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#             "PASSWORD": "123456"
+#         }
+#     }
+# }
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
 
 LANGUAGE_CODE = 'zh-hans'
 
@@ -157,7 +164,7 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # 指定根目录
 
-FILE_URL = 'static/%Y%m/files/'
+FILE_URL = 'PDF/%Y%m%d/'
 FILE_ROOT = os.path.join(BASE_DIR, FILE_URL)
 
 LOGGING_CONFIG = None
