@@ -1,0 +1,110 @@
+.top {
+  display: flex;
+  justify-content: center;
+  margin: 30rpx 0;
+}
+
+.report_name {
+  position: absolute;
+  z-index: 9;
+  left: 26rpx;
+  top: 8rpx;
+}
+
+.report_title {
+  font-size: 36rpx;
+  color: #181818;
+  position: relative;
+  font-weight: 600;
+  border: solid 1rpx #bfbfbf;
+  width: 209rpx;
+  height: 58rpx;
+  text-align: center;
+}
+
+.report_title_line {
+  width: 160rpx;
+  height: 18rpx;
+  background-color: #64edac;
+  position: absolute;
+  top: 24rpx;
+  left: 18rpx;
+}
+
+.report_title_border {
+  width: 209rpx;
+  height: 58rpx;
+  border: solid 1rpx #bfbfbf;
+  margin-top: -50rpx;
+  margin-left: -9rpx;
+}
+
+.top_content {
+  width: 660rpx;
+  height: 665rpx;
+  background-image: linear-gradient(90deg, rgba(180, 180, 180, 0.15) 10%, rgba(0, 0, 0, 0) 10%),
+                      linear-gradient(rgba(180, 180, 180, 0.15) 10%, rgba(0, 0, 0, 0) 10%);
+  background-size: 15rpx 15rpx;
+  margin: 0 30rpx;
+  font-size: 28rpx;
+  color: #4c4c4c;
+  padding: 15rpx;
+}
+
+.top_content_font {
+  font-size: 30rpx;
+  color: #0d0d0d;
+  font-weight: 600;
+}
+
+.top_content_view {
+  margin: 50rpx 0;
+}
+
+.bottom {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 99;
+}
+
+.bottom button {
+  font-size: 28rpx;
+  border-radius: 0;
+  height: 70rpx;
+  width: 50%;
+}
+
+.share {
+  background: #0dd677;
+  color: #fefefe;
+  border: 1rpx solid #0dd677;
+}
+
+.share image {
+  width: 33rpx;
+  height: 33rpx;
+  vertical-align: middle;
+margin-left: 30rpx;
+}
+
+.assessBtn {
+  background: #fff;
+  color: #0dd677;
+  border: 1rpx solid #0dd677;
+}
+
+.assessBtn image {
+  width: 17rpx;
+  height: 30rpx;
+  vertical-align: middle;
+margin-right: 30rpx;
+
+}
+.null{
+  height: 120rpx;
+  width: 100%;
+}

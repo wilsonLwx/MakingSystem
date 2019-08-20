@@ -1,4 +1,3 @@
-
 # coding=utf-8
 
 from hashlib import md5
@@ -46,7 +45,6 @@ class REST:
     def setAccount(self, AccountSid, AccountToken):
         self.AccountSid = AccountSid
         self.AccountToken = AccountToken
-
 
         # 设置子帐号
 
@@ -796,4 +794,3 @@ class REST:
         else:
             req.add_header("Accept", "application/xml")
             req.add_header("Content-Type", "application/xmlcharset=utf-8")
-

@@ -1,0 +1,20 @@
+.top image {
+  width: 428rpx;
+  height: 369rpx;
+}
+
+.body {
+  display: flex;
+  margin-top: 20%;
+}
+
+.top {
+  margin: 0 auto;
+}
+
+.top view {
+  font-size: 32rpx;
+  color: #b1b1b1;
+  width: 428rpx;
+  margin-top: 36rpx;
+}
