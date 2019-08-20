@@ -67,6 +67,7 @@ class ChangeInfo(graphene.Mutation):
 class RegisterData(graphene.InputObjectType):
     mobile = graphene.String(required=True)
     smsCode = graphene.String(required=True)
+    token = graphene.String(required=True)
 
 
 class Register(graphene.Mutation):
@@ -80,24 +81,28 @@ class Register(graphene.Mutation):
         register_data = kwargs.get('registerData')
         smsCode = register_data.get('smsCode')
         mobile = register_data.get('mobile')
+        token = register_data.get('token')
 
         if not all([smsCode, mobile]):
             raise GraphQLError("有空信息输入")
 
-        if UserModel.objects.filter(mobile=mobile).first():
+        user_info = UserModel.objects.filter(mobile=mobile).first()
+        if user_info:
             return Register(result=True, message="用户已注册")
 
         context = cache.get(mobile)
+        value = cache.get(token)
+        print(type(value))
         if not context:
             return Register(result=False, message="验证码已过期")
         if smsCode != context:
             return Register(result=False, message="验证码不匹配，请重新输入")
         try:
-            user = UserModel.objects.create(mobile=mobile)
+            user_info.openid = value.get('openid')
+            user_info.is_active = True
+            user_info.save()
         except db.IntegrityError:
             raise Exception("保存数据库失败")
-        user.is_active = True
-        user.save()
         cache.delete('smsCode')
         return Register(result=True, message="用户保存成功")
 
