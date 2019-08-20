@@ -100,11 +100,11 @@ class Register(graphene.Mutation):
             return Register(result=False, message="验证码不匹配，请重新输入")
         try:
             openid = value.get('openid')
-            UserModel.objects.create(openid=openid,
+            user_info = UserModel(openid=openid,
                                      mobile=mobile,
                                      is_active=True
                                      )
-
+            user_info.save()
         except db.IntegrityError:
             raise Exception("保存数据库失败")
         cache.delete('smsCode')
