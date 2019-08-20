@@ -19,7 +19,7 @@ class LeaderTestType(graphene.ObjectType):
 
 class Query:
     leader_test = graphene.Field(LeaderTestType)
-    courses = graphene.Field(LeaderTestInfo)
+    courses = graphene.Field(LeaderTestType)
 
     def resolve_leader_test(self, info):
         leader_test_obj = TestDetailsModel.objects.filter(is_index_show=True, push_time__lt=datetime.now())
