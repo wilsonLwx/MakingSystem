@@ -89,9 +89,13 @@ class Register(graphene.Mutation):
         user_info = UserModel.objects.filter(mobile=mobile).first()
         if user_info:
             return Register(result=True, message="用户已注册")
-
         context = cache.get(mobile)
         value = cache.get(token)
+        openid = value.get('openid')
+        user_info = UserModel.objects.filter(openid=openid).first()
+        if not user_info:
+            return Register(result=False, message="openid 未保存到数据库")
+
         print(value)
         print(type(value))
         if not context:
@@ -99,11 +103,7 @@ class Register(graphene.Mutation):
         if smsCode != context:
             return Register(result=False, message="验证码不匹配，请重新输入")
         try:
-            openid = value.get('openid')
-            user_info = UserModel(openid=openid,
-                                     mobile=mobile,
-                                     is_active=True
-                                     )
+            user_info.mobile = mobile
             user_info.save()
         except db.IntegrityError:
             raise Exception("保存数据库失败")
@@ -155,8 +155,10 @@ class Wxauthor(graphene.Mutation):
             else:
                 return True
 
-        token = uuid.uuid1()
-        value = returnOpenid(js_code)
+        # token = uuid.uuid1()
+        token = "123"
+        # value = returnOpenid(js_code)
+        value = {'openid': '12345', 'session_key': 'WKSyKKdckZGSF0YK/bPY4A=='}
         result = search_user(value.get('openid'))
         if not result:
             user_info = UserModel(
@@ -198,18 +200,20 @@ class MobileVerify(graphene.Mutation):
             if user is not None:
                 return MobileVerify(result=True, message="用户已注册")
 
-        smsCode = '%06d' % random.randint(0, 999999)
-        if cache.get(phone_num):
-            LOG.debug(cache.get(phone_num))
-            return MobileVerify(result=True, message="验证码未过期")
-        try:
-            ccp = CCP()
-            result = ccp.sendTemplateSMS(phone_num, [smsCode, '5'], 1)
-        except Exception as e:
-            LOG.error(e)
-            return MobileVerify(result=False, message="发送短信异常")
+        # smsCode = '%06d' % random.randint(0, 999999)
+        smsCode = "123456"
+        # if cache.get(phone_num):
+        #     LOG.debug(cache.get(phone_num))
+        #     return MobileVerify(result=True, message="验证码未过期")
+        # try:
+        #     ccp = CCP()
+        #     result = ccp.sendTemplateSMS(phone_num, [smsCode, '5'], 1)
+        # except Exception as e:
+        #     LOG.error(e)
+        #     return MobileVerify(result=False, message="发送短信异常")
 
         cache.set(phone_num, smsCode, 500)
+        result = 0
         if result == 0:
             return MobileVerify(result=True, message="发送短信成功")
         else:
