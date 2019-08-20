@@ -92,15 +92,19 @@ class Register(graphene.Mutation):
 
         context = cache.get(mobile)
         value = cache.get(token)
+        print(value)
         print(type(value))
         if not context:
             return Register(result=False, message="验证码已过期")
         if smsCode != context:
             return Register(result=False, message="验证码不匹配，请重新输入")
         try:
-            user_info.openid = value.get('openid')
-            user_info.is_active = True
-            user_info.save()
+            openid = value.get('openid')
+            UserModel.objects.create(openid=openid,
+                                     mobile=mobile,
+                                     is_active=True
+                                     )
+
         except db.IntegrityError:
             raise Exception("保存数据库失败")
         cache.delete('smsCode')
@@ -162,6 +166,7 @@ class Wxauthor(graphene.Mutation):
 
         print(token)
         cache.set(token, value, 7200)
+
         return Wxauthor(result=result, token=token,  message="openid保存到数据库")
 
 
