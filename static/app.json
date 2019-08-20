@@ -1,0 +1,44 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/sort/sort",
+    "pages/my/my",
+    "pages/read/read",
+    "pages/assess/assess",
+    "pages/verification/verification",
+    "pages/result/result"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "大学生领导力潜质研究院",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "backgroundColor": "#ffffff",
+    "color": "#b3b3b3",
+    "selectedColor": "#363e51",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/tab001.png",
+        "selectedIconPath": "images/tab002.png"
+      },
+      {
+        "pagePath": "pages/sort/sort",
+        "text": "分类",
+        "iconPath": "images/tab003.png",
+        "selectedIconPath": "images/tab004.png"
+      },
+      {
+        "pagePath": "pages/my/my",
+        "text": "我的",
+        "iconPath": "images/tab005.png",
+        "selectedIconPath": "images/tab006.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json"
+}

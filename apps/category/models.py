@@ -45,6 +45,7 @@ class TestDetails(models.Model):
     url = models.URLField('链接地址', max_length=200)
     is_index_show = models.BooleanField('是否首页显示', default=True)
     is_class_show = models.BooleanField('是否分类页显示', default=True)
+    is_index_wheel_show = models.BooleanField('是否首页轮播显示显示', default=True)
     test_number = models.IntegerField('测试人数', default=0)
     test_dec = models.CharField('测试简介', max_length=100)
     push_time = models.DateTimeField('推送时间', default=datetime.now)

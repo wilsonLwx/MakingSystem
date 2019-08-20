@@ -1,0 +1,14 @@
+<view>
+  <navigator wx:for="dadsdsd" wx:key="index" url="/pages/assess/assess">
+    <view class="list">
+      <image src="../../images/scrollicon001.png"></image>
+      <view class="list_right">
+        <view class="title">大学生领导力评估</view>
+        <view class="text_hidden">你的领导能力到底有多强，测试显示大部...</view>
+        <view class="number">2697人已测</view>
+      </view>
+    </view>
+  </navigator>
+
+  <view class="load">努力加载中...</view>
+</view>
