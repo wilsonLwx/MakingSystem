@@ -3,8 +3,6 @@ import re
 
 import oss2
 import zipfile
-from users.models import Users
-from pdf.models import PDF
 from makingsystem.settings import config
 # 用户登录名称 object-oss@1463266644828335.onaliyun.com
 # AccessKey ID LTAIeFNriSXX6ySq
@@ -20,6 +18,16 @@ LOG = logging.getLogger(__file__)
 cursor = connection.cursor()
 
 class Xfer(object):
+
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(cls, 'instance'):
+            obj = super().__new__(cls)
+            # obj.rest = REST(serverIP, serverPort, softVersion)
+            # obj.rest.setAccount(accountSid, accountToken)
+            # obj.rest.setAppId(appId)
+
+            cls.instance = obj
+        return cls.instance
 
     def __init__(self):
 
@@ -72,3 +80,10 @@ class Xfer(object):
     def sign_url(self, name):
         url = self.bucket.sign_url('GET', name, 60 * 30)
         return url
+
+
+if __name__ == '__main__':
+    x = Xfer()
+    x.initAliyun()
+    url = x.sign_url("testPDF/123456.pdf")
+    print(url)
