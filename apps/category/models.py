@@ -25,7 +25,7 @@ class TestName(models.Model):
     name = models.CharField(max_length=20, verbose_name='测试名称')
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subs', null=True, blank=True,
                                verbose_name='父级测试')
-    is_index_show = models.BooleanField('是否首页轮播显示显示', default=False)
+    is_index_show = models.BooleanField('是否首页轮播显示', default=False)
 
     class Meta:
         verbose_name = '测评分类'

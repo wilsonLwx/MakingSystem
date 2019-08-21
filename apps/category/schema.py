@@ -46,8 +46,7 @@ class Query:
 
     def resolve_indexbanners(self, info):
         # 首页 第一部分 轮播图
-        banner_show_class = TestNameModel.objects.filter(is_index_show=True)  # 能在首页轮播的类对象
-        name_list = [obj.name for obj in banner_show_class]
+        name_list = TestNameModel.objects.filter(is_index_show=True).values_list('name', flat=True)
         leader_test_obj = TestDetailsModel.objects.filter(is_index_show=True, push_time__lt=datetime.now(),
                                                           child_test_name__in=name_list)
         banner_info = leader_test_obj.values_list('title', 'url', 'image')
