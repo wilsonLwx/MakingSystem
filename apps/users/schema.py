@@ -2,7 +2,7 @@
 # __date__ = '2019/08/08'
 import random
 import re
-
+import uuid
 from graphql import GraphQLError
 from utils.yuntongxun.SendTemplateSMS import CCP
 from .models import Users as UserModel
@@ -64,6 +64,7 @@ class ChangeInfo(graphene.Mutation):
 class RegisterData(graphene.InputObjectType):
     mobile = graphene.String(required=True)
     smsCode = graphene.String(required=True)
+    token = graphene.String(required=True)
 
 
 class Register(graphene.Mutation):
@@ -77,25 +78,33 @@ class Register(graphene.Mutation):
         register_data = kwargs.get('registerData')
         smsCode = register_data.get('smsCode')
         mobile = register_data.get('mobile')
+        token = register_data.get('token')
 
         if not all([smsCode, mobile]):
             raise GraphQLError("有空信息输入")
 
-        if UserModel.objects.filter(mobile=mobile).first():
+        user_info = UserModel.objects.filter(mobile=mobile).first()
+        if user_info:
             return Register(result=True, message="用户已注册")
-
         context = cache.get(mobile)
+        value = cache.get(token)
+        openid = value.get('openid')
+        user_info = UserModel.objects.filter(openid=openid).first()
+        if not user_info:
+            return Register(result=False, message="openid 未保存到数据库")
+
+        print(value)
+        print(type(value))
         if not context:
             return Register(result=False, message="验证码已过期")
         if smsCode != context:
             return Register(result=False, message="验证码不匹配，请重新输入")
         try:
-            user = UserModel.objects.create(mobile=mobile)
+            user_info.mobile = mobile
+            user_info.save()
         except db.IntegrityError:
             raise Exception("保存数据库失败")
-        user.is_active = True
-        user.save()
-        cache.delete('smsCode')
+        # cache.delete('smsCode')
         return Register(result=True, message="用户保存成功")
 
 
@@ -103,38 +112,8 @@ class LoginData(graphene.InputObjectType):
     mobile = graphene.String(required=True)
     smsCode = graphene.String(required=True)
 
-
-#
-# class Login(graphene.Mutation):
-#     class Arguments:
-#         login_data = LoginData(required=True)
-#
-#     result = graphene.Boolean()
-#     user = graphene.Field(UserType)
-#     message = graphene.String()
-#
-#     def mutate(self, info, *args, **kwargs):
-#         login_data = kwargs.get('login_data')
-#         mobile = login_data.get('mobile')
-#         smsCode = login_data.get('smsCode')
-#         if not all([mobile, smsCode]):
-#             raise GraphQLError("有空信息输入")
-#         try:
-#             user = UserModel.objects.get(mobile=mobile)
-#         except Exception as e:
-#             raise GraphQLError("手机号错误")
-#         if not user.check_password(passwd):
-#             raise GraphQLError("密码错误")
-#         if not user.is_authenticated:
-#             raise GraphQLError(f"{user}用户名或密码错误")
-#         # login(info.context, user)
-#         message = "登录成功"
-#         return Login(result=True, user=user, message=message)
-
-
 class WxauthorData(graphene.InputObjectType):
-    code = graphene.String()
-    openid = graphene.String()
+    jsCode = graphene.String()
 
 
 class Wxauthor(graphene.Mutation):
@@ -142,56 +121,52 @@ class Wxauthor(graphene.Mutation):
         wxauthordata = WxauthorData(required=True)
 
     result = graphene.Boolean()
-    openid = graphene.String()
+    token = graphene.String()
     message = graphene.String()
 
     def mutate(self, info, *args, **kwargs):
-        code = kwargs.get('code', None)
-        openid = kwargs.get('openid', None)
-        user_info = UserModel()
+        wxauthordata = kwargs.get('wxauthordata')
+        js_code = wxauthordata.get('jsCode')
 
-        def search_user(openid):
-            try:
-                user = user_info.objects.get(openid=openid)
-            except Exception as e:
-                return False
-            else:
-                return user
-
-        # 授权后 token 未过期，openid还在时
-        if not code and openid:
-            user = search_user(openid)
-            if user:
-                return Wxauthor(result=True, openid=user.openid, message="查询成功")
-            else:
-                return Wxauthor(result=False, openid=None, message="查询失败")
-
-        # 用户未注册 或 token 过期
-        if code and not openid:
-            appid = ''
-            appsecret = ''
-            data = {
-                'appid': appid,
-                'appsecret': appsecret,
-                'code': code
-            }
-            url = "https://api.weixin.qq.com/sns/jscode2session"
-            r = requests.get(url, data=data, verify=True)
+        def returnOpenid(js_code):
+            appid = 'wx900ef66b9970c484'
+            appsecret = '8ca28ffc3096a88b9f96d5f98cc272de'
+            url = f"https://api.weixin.qq.com/sns/jscode2session?appid={appid}&secret={appsecret}&js_code={js_code}"
+            r = requests.get(url, verify=True)
             if r.status_code != requests.codes.ok:
                 raise GraphQLError(f"获取数据失败{r.text}")
             r_json = r.json()
             openid = r_json.get('openid')
-            user = search_user(openid)
+            session_key = r_json.get('session_key')
+            value = {
+                'openid': openid,
+                'session_key': session_key
+            }
+            return value
 
-            # 查询到用户返回
-            if user:
-                return Wxauthor(result=True, openid=user.openid, message="用户已授权")
-
-            # 未查询到用户保存到数据库
+        def search_user(openid):
+            try:
+                user = UserModel.objects.get(openid=openid)
+            except Exception as e:
+                return False
             else:
-                user.openid = openid
-                user.save()
-                return Wxauthor(result=False, openid=openid, message="用户未授权")
+                return True
+
+        token = uuid.uuid1()
+        value = returnOpenid(js_code)
+        result = search_user(value.get('openid'))
+        openid = value.get('openid')
+        if not result:
+            user_info = UserModel(
+                openid=openid,
+                username=openid
+            )
+            user_info.save()
+
+        print(token)
+        cache.set(token, value, 7200)
+
+        return Wxauthor(result=result, token=token,  message="openid保存到数据库")
 
 
 class MobileVerifyData(graphene.InputObjectType):
@@ -243,6 +218,5 @@ class MobileVerify(graphene.Mutation):
 class Mutation(graphene.ObjectType):
     change_info = ChangeInfo.Field()
     register = Register.Field()
-    # login = Login.Field()
     wxauthor = Wxauthor.Field()
     mobileverify = MobileVerify.Field()

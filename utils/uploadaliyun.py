@@ -24,6 +24,16 @@ LOG = logging.getLogger(__file__)
 
 class Xfer(object):
 
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(cls, 'instance'):
+            obj = super().__new__(cls)
+            # obj.rest = REST(serverIP, serverPort, softVersion)
+            # obj.rest.setAccount(accountSid, accountToken)
+            # obj.rest.setAppId(appId)
+
+            cls.instance = obj
+        return cls.instance
+
     def __init__(self):
 
         self.auth = None
@@ -78,3 +88,10 @@ class Xfer(object):
     def sign_url(self, name):
         url = self.bucket.sign_url('GET', name, 60 * 30)
         return url
+
+
+if __name__ == '__main__':
+    x = Xfer()
+    x.initAliyun()
+    url = x.sign_url("testPDF/123456.pdf")
+    print(url)
