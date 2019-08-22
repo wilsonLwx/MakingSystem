@@ -145,32 +145,29 @@ class Wxauthor(graphene.Mutation):
             }
             return value
 
-        def search_user(openid):
-            try:
-                user = UserModel.objects.get(openid=openid)
-            except Exception as e:
-                return False
-            else:
-                return True
 
         auth_token = uuid.uuid1()
         value = returnOpenid(js_code)
-        # result = search_user(value.get('openid'))
         openid = value.get('openid')
+        print(value)
         result = UserModel.objects.filter(openid=openid, is_superuser=0).exists()
-        if not result:
+
+        if all([openid, not result]):
             user_info = UserModel(
                 openid=openid,
                 username=openid
             )
             user_info.save()
             message = "创建openid"
-
+        if not openid:
+            message = "openid为空"
+            result = False
+            return Wxauthor(result=result, auth_token=auth_token,  message=message)
         print(auth_token)
         print(openid)
         cache.set(auth_token, value, 60 * 60 * 5)
         message = "openid已存在"
-        return Wxauthor(result=result, auth_token=auth_token,  message=message)
+        return Wxauthor(result=True, auth_token=auth_token,  message=message)
 
 
 class MobileVerifyData(graphene.InputObjectType):
