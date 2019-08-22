@@ -162,7 +162,7 @@ class Wxauthor(graphene.Mutation):
         if not openid:
             message = "openid为空"
             result = False
-            return Wxauthor(result=result, auth_token=auth_token,  message=message)
+            return Wxauthor(result=result, auth_token=None,  message=message)
         print(auth_token)
         print(openid)
         cache.set(auth_token, value, 60 * 60 * 5)

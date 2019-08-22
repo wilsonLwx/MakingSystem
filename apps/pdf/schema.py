@@ -24,8 +24,9 @@ class Query(graphene.ObjectType):
 
     def resolve_pdf_report(self, info, auth_token, page):
         value = cache.get(auth_token)
+
         if not value:
-            raise GraphQLError("User is not exist")
+            raise GraphQLError(f"User is not exist{cache}")
         open_id = value.get('openid')
         user_obj = UsersModel.objects.filter(openid=open_id)
         group = []
