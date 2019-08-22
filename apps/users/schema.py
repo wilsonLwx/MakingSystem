@@ -83,14 +83,14 @@ class Register(graphene.Mutation):
         if not all([smsCode, mobile]):
             raise GraphQLError("有空信息输入")
 
-        user_info = UserModel.objects.filter(mobile=mobile).first()
-        if user_info:
-            return Register(result=True, message="用户已注册")
+        # user_info = UserModel.objects.filter(mobile=mobile).first()
+        # if user_info:
+        #     return Register(result=True, message="用户已注册")
         context = cache.get(mobile)
         value = cache.get(auth_token)
         openid = value.get('openid')
-        user_info = UserModel.objects.filter(openid=openid).first()
-        if not user_info:
+        user_info = UserModel.objects.filter(openid=openid, mobile=mobile)
+        if not user_info.exists():
             return Register(result=False, message="openid 未保存到数据库")
 
         print(value)
@@ -165,7 +165,7 @@ class Wxauthor(graphene.Mutation):
             user_info.save()
 
         print(auth_token)
-        cache.set(auth_token, value, 7200)
+        cache.set(auth_token, value, 60 * 60 * 5)
 
         return Wxauthor(result=result, auth_token=auth_token,  message="openid保存到数据库")
 
@@ -190,13 +190,11 @@ class MobileVerify(graphene.Mutation):
         # if not all([phone_num, verify_num]):
         #     return MobileVerify(result=False, message="参数不完整")
         # 查找数据库是否注册过
-        try:
-            user = UserModel.objects.get(mobile=phone_num)
-        except Exception as e:
-            LOG.info('用户未注册')
-        else:
-            if user is not None:
-                return MobileVerify(result=True, message="用户已注册")
+        user = UserModel.objects.filter(mobile=phone_num)
+        LOG.info('用户未注册')
+
+        if user.exists():
+            return MobileVerify(result=True, message="用户已注册")
 
         smsCode = '%06d' % random.randint(0, 999999)
         if cache.get(phone_num):

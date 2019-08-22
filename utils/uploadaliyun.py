@@ -65,18 +65,20 @@ class Xfer(object):
             print('###name:', name)
             mobile = re.compile('1[345678]\d{9}')
             mobileNum = mobile.search(name).group()
-            user = Users.objects.filter(mobile=mobileNum).first()
-            PDFInfo = PDF()
+            # user = Users.objects.filter(mobile=mobileNum)
+            PDFInfo = PDF.objects.filter(user__mobile=mobileNum)
+            if not PDFInfo.exists():
+                print("用户未保存")
+                continue
             PDFInfo.name = name.split('/')[-1]
             PDFInfo.aliosspath = name
             print('### mobileNum:', mobileNum)
-            if not user:
-                LOG.error(f"用户不存在")
-                user = Users()
-                user.mobile = mobileNum
-                user.username = mobileNum
-                user.save()
-            PDFInfo.user = user
+            # if not user:
+            #     LOG.error(f"用户不存在")
+            #     user = Users()
+            #     user.mobile = mobileNum
+            #     user.username = mobileNum
+            #     user.save()
             PDFInfo.save()
             data = zfile.read(fileN)
             self.bucket.put_object(name, data)
