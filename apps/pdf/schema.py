@@ -2,6 +2,7 @@ import graphene
 from django.core.paginator import Paginator, PageNotAnInteger, InvalidPage, EmptyPage
 from graphql import GraphQLError
 
+from django.core.cache import cache
 from users.models import Users as UsersModel
 from pdf.models import PDF as PDFModel
 from utils.uploadaliyun import Xfer
@@ -18,9 +19,13 @@ class ReportType(graphene.ObjectType):
 
 
 class Query(graphene.ObjectType):
-    pdf_report = graphene.Field(ReportType, open_id=graphene.Int(required=True), page=graphene.Int(default_value=1))
+    pdf_report = graphene.Field(ReportType, token=graphene.String(required=True), page=graphene.Int(default_value=1))
 
-    def resolve_pdf_report(self, info, open_id, page):
+    def resolve_pdf_report(self, info, token, page):
+        value = cache.get(token)
+        if not value:
+            raise GraphQLError("User is not exist")
+        open_id = value.get('openid')
         user_obj = UsersModel.objects.filter(openid=open_id)
         group = []
         if user_obj.exists():
