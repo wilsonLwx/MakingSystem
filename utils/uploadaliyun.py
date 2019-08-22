@@ -3,8 +3,9 @@ import re
 
 import oss2
 import zipfile
-from users.models import Users
+
 from pdf.models import PDF
+from users.models import Users
 from makingsystem.settings import config
 # 用户登录名称 object-oss@1463266644828335.onaliyun.com
 # AccessKey ID LTAIeFNriSXX6ySq
@@ -17,7 +18,9 @@ log.initLogConf()
 
 LOG = logging.getLogger(__file__)
 
-cursor = connection.cursor()
+
+# cursor = connection.cursor()
+
 
 class Xfer(object):
 
@@ -47,21 +50,24 @@ class Xfer(object):
         for fileN in zfile.namelist():
             if fileN.endswith('/'):
                 continue
-            name = fileN.encode('cp437').decode('gbk')
+            # name = fileN.encode('cp437').decode('gbk')
+            name = fileN
+            print('###name:', name)
             mobile = re.compile('1[345678]\d{9}')
-            mobileNum = mobile.search(name)
-            # if not Users.objects.filter(mobile=mobileNum).first():
-            #     LOG.error(f"用户不存在")
-            # PDFInfo = PDF()
-            # PDFInfo.name = name.split('/')[-1]
-            # PDFInfo.aliosspath = name
-            # PDFInfo.user = mobileNum
-            # PDFInfo.save()
-            cursor.execute('select * from Users where mobile=%s', mobileNum)
-            raw = cursor.fetchone()
-            if not raw:
-                LOG.error(f'用户不存在')
-            cursor.execute('insert into Users(name, aliosspath, user) values (%s, %s, %s)' % (name.split('/')[-1], name, mobileNum))
+            mobileNum = mobile.search(name).group()
+            user = Users.objects.filter(mobile=mobileNum).first()
+            PDFInfo = PDF()
+            PDFInfo.name = name.split('/')[-1]
+            PDFInfo.aliosspath = name
+            print('### mobileNum:', mobileNum)
+            if not user:
+                LOG.error(f"用户不存在")
+                user = Users()
+                user.mobile = mobileNum
+                user.username = mobileNum
+                user.save()
+            PDFInfo.user = user
+            PDFInfo.save()
             data = zfile.read(fileN)
             self.bucket.put_object(name, data)
         try:

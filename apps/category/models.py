@@ -27,6 +27,8 @@ class TestName(models.Model):
                                verbose_name='父级测试')
     is_index_show = models.BooleanField('是否首页轮播显示', default=False)
 
+    is_index_show = models.BooleanField('此类测试是否首页轮播显示', default=False)
+
     class Meta:
         verbose_name = '测评分类'
         verbose_name_plural = '测评分类'
@@ -57,9 +59,9 @@ class TestDetails(models.Model):
 
 class TestIn(models.Model):
     """测试说明页"""
-    introduce = UEditorField('介绍', width=600, height=300,)
-    theory = UEditorField('理论', width=600, height=300,)
-    notice = UEditorField('须知', width=600, height=300,)
+    introduce = UEditorField('介绍', width=600, height=300, )
+    theory = UEditorField('理论', width=600, height=300, )
+    notice = UEditorField('须知', width=600, height=300, )
 
     class Meta:
         verbose_name = '测试说明'

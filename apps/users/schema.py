@@ -4,10 +4,8 @@ import random
 import re
 
 from graphql import GraphQLError
-
 from utils.yuntongxun.SendTemplateSMS import CCP
 from .models import Users as UserModel
-
 from graphene_django import DjangoObjectType
 import graphene
 from django.core.cache import cache
@@ -49,7 +47,6 @@ class ChangeInfo(graphene.Mutation):
             user_info = UserModel.objects.get(pk=pk)
         except Exception as e:
             raise GraphQLError('User is not existed, please check your input!')
-
         user = info.context.user
         if not user.is_authenticated:
             raise Exception('Authentication credentials were not provided')
