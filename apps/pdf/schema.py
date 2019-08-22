@@ -19,10 +19,11 @@ class ReportType(graphene.ObjectType):
 
 
 class Query(graphene.ObjectType):
-    pdf_report = graphene.Field(ReportType, token=graphene.String(required=True), page=graphene.Int(default_value=1))
+    pdf_report = graphene.Field(ReportType, auth_token=graphene.String(required=True),
+                                page=graphene.Int(default_value=1))
 
-    def resolve_pdf_report(self, info, token, page):
-        value = cache.get(token)
+    def resolve_pdf_report(self, info, auth_token, page):
+        value = cache.get(auth_token)
         if not value:
             raise GraphQLError("User is not exist")
         open_id = value.get('openid')
