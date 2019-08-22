@@ -25,7 +25,7 @@ class Users(AbstractUser):
     # grade = models.CharField("年级", max_length=10, null=True)
     # education = models.CharField("学历", max_length=10, null=True)
     # vocation = models.CharField("意向行业", max_length=20, null=True)
-    image = models.ImageField('用户头像', upload_to='image/%Y%m', default='image/default.png', max_length=100)
+    # image = models.ImageField('用户头像', upload_to='image/%Y%m', default='image/default.png', max_length=100)
 
     class Meta:
         db_table = 'Users'

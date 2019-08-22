@@ -112,6 +112,7 @@ class LoginData(graphene.InputObjectType):
     mobile = graphene.String(required=True)
     smsCode = graphene.String(required=True)
 
+
 class WxauthorData(graphene.InputObjectType):
     jsCode = graphene.String()
 
@@ -166,7 +167,7 @@ class Wxauthor(graphene.Mutation):
         print(token)
         cache.set(token, value, 7200)
 
-        return Wxauthor(result=result, token=token,  message="openid保存到数据库")
+        return Wxauthor(result=result, token=token, message="openid保存到数据库")
 
 
 class MobileVerifyData(graphene.InputObjectType):

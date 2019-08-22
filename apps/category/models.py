@@ -9,7 +9,7 @@ from DjangoUeditor.models import UEditorField
 class Banner(models.Model):
     """课程分类"""
     title = models.CharField('标题', max_length=100)
-    image = models.ImageField('轮播图', upload_to='banner/%Y%m', max_length=100)
+    image = models.ImageField('轮播图', upload_to='image/', max_length=100)
     # url = models.URLField('链接地址', max_length=200)
     is_show = models.BooleanField('是否首页显示', default=True)
     test_number = models.IntegerField('测试人数', default=0)
@@ -25,7 +25,6 @@ class TestName(models.Model):
     name = models.CharField(max_length=20, verbose_name='测试名称')
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subs', null=True, blank=True,
                                verbose_name='父级测试')
-    is_index_show = models.BooleanField('是否首页轮播显示', default=False)
 
     is_index_show = models.BooleanField('此类测试是否首页轮播显示', default=False)
 
@@ -44,7 +43,7 @@ class TestDetails(models.Model):
     child_test_name = models.ForeignKey(TestName, on_delete=models.PROTECT,
                                         related_name='child_test_name', verbose_name='二级测试名称')
     title = models.CharField('标题', max_length=100)
-    image = models.ImageField('轮播图', upload_to='index/%Y%m', max_length=100)
+    image = models.ImageField('轮播图', upload_to='image/', max_length=100)
     # url = models.URLField('链接地址', max_length=200)
     is_index_show = models.BooleanField('是否首页显示', default=True)
     is_class_show = models.BooleanField('是否分类页显示', default=True)
