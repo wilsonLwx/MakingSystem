@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class UsersConfig(AppConfig):
-    name = 'users'
-    verbose_name = '用户信息'
+class CategoryConfig(AppConfig):
+    name = 'category'
+    verbose_name = '测试分类'
