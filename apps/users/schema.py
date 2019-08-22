@@ -145,7 +145,6 @@ class Wxauthor(graphene.Mutation):
             }
             return value
 
-
         auth_token = uuid.uuid1()
         value = returnOpenid(js_code)
         openid = value.get('openid')
