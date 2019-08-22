@@ -38,6 +38,6 @@ class Query(graphene.ObjectType):
         # 首页 第一部分 轮播图
         name_list = TestNameModel.objects.filter(is_index_show=True).values_list('name')
         leader_test_obj = TestDetailsModel.objects.filter(is_index_show=True, push_time__lt=datetime.now(),
-                                                          child_test_name__in=name_list)
+                                                          child_test_name__name__in=name_list)
         banner_info = leader_test_obj.values_list('title', 'url', 'image')
         return LeaderTestType(group=[LeaderTestInfo(title=i[0], url=i[1], image=i[2]) for i in banner_info])

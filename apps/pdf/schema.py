@@ -1,6 +1,8 @@
 import graphene
+from django.core.paginator import Paginator, PageNotAnInteger, InvalidPage, EmptyPage
 from graphql import GraphQLError
 
+from django.core.cache import cache
 from users.models import Users as UsersModel
 from pdf.models import PDF as PDFModel
 from utils.uploadaliyun import Xfer
@@ -17,9 +19,13 @@ class ReportType(graphene.ObjectType):
 
 
 class Query(graphene.ObjectType):
-    pdf_report = graphene.Field(ReportType, open_id=graphene.Int(required=True))
+    pdf_report = graphene.Field(ReportType, token=graphene.String(required=True), page=graphene.Int(default_value=1))
 
-    def resolve_pdf_report(self, info, open_id):
+    def resolve_pdf_report(self, info, token, page):
+        value = cache.get(token)
+        if not value:
+            raise GraphQLError("User is not exist")
+        open_id = value.get('openid')
         user_obj = UsersModel.objects.filter(openid=open_id)
         group = []
         if user_obj.exists():
@@ -35,6 +41,19 @@ class Query(graphene.ObjectType):
                 r.pdf_name = pdf_name
                 r.url = url
                 group.append(r)
+            paginator = Paginator(group, 5)
+            try:
+                group = paginator.page(page)
+            except PageNotAnInteger:
+                # 如果请求的页数不是整数, 返回第一页。
+                group = paginator.page(1)
+            except InvalidPage:
+                # 如果请求的页数不存在, 重定向页面
+                raise GraphQLError('请求页数不存在')
+            except EmptyPage:
+                # 如果请求的页数不在合法的页数范围内，返回结果的最后一页。
+                group = paginator.page(paginator.num_pages)
+
             x.clearAliyun()
             return ReportType(group=group, image=image)
         else:
