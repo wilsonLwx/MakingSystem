@@ -1,15 +1,14 @@
-import sys
 import time
-import logging
+
+from django.core.management.base import BaseCommand
+from watchdog.observers import Observer
+from watchdog.events import *
+
 from utils.log import log
-from makingsystem.settings import config
-from .uploadaliyun import Xfer
+from makingsystem.settings import MEDIA_ROOT
+from utils.uploadaliyun import Xfer
 log.initLogConf()
 LOG = logging.getLogger(__file__)
-
-
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
 
 
 class MyHandler(FileSystemEventHandler):
@@ -40,15 +39,17 @@ class MyHandler(FileSystemEventHandler):
         pass
 
 
-if __name__ == "__main__":
-    path = "."
-    event_handler = MyHandler()
-    observer = Observer()
-    observer.schedule(event_handler, path, recursive=True)
-    observer.start()
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        observer.stop()
-    observer.join()
+class Command(BaseCommand):
+    def handle(self, *args, **options):
+        print('----开始监控是否有PDF文档上传----------------')
+        path = MEDIA_ROOT + '/PDF/'
+        observer = Observer()
+        event_handler = MyHandler()
+        observer.schedule(event_handler, path, True)
+        observer.start()
+        try:
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            observer.stop()
+        observer.join()

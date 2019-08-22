@@ -3,7 +3,7 @@ from graphql import GraphQLError
 
 from users.models import Users as UsersModel
 from pdf.models import PDF as PDFModel
-from utils.watchdog.uploadaliyun import Xfer
+from utils.uploadaliyun import Xfer
 
 
 class ReportInfo(graphene.ObjectType):

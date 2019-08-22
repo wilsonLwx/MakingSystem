@@ -26,6 +26,8 @@ class TestName(models.Model):
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subs', null=True, blank=True,
                                verbose_name='父级测试')
 
+    is_index_show = models.BooleanField('此类测试是否首页轮播显示', default=False)
+
     class Meta:
         verbose_name = '测评分类'
         verbose_name_plural = '测评分类'
@@ -45,7 +47,6 @@ class TestDetails(models.Model):
     url = models.URLField('链接地址', max_length=200)
     is_index_show = models.BooleanField('是否首页显示', default=True)
     is_class_show = models.BooleanField('是否分类页显示', default=True)
-    is_index_wheel_show = models.BooleanField('是否首页轮播显示显示', default=True)
     test_number = models.IntegerField('测试人数', default=0)
     test_dec = models.CharField('测试简介', max_length=100)
     push_time = models.DateTimeField('推送时间', default=datetime.now)
@@ -57,9 +58,9 @@ class TestDetails(models.Model):
 
 class TestIn(models.Model):
     """测试说明页"""
-    introduce = UEditorField('介绍', width=600, height=300,)
-    theory = UEditorField('理论', width=600, height=300,)
-    notice = UEditorField('须知', width=600, height=300,)
+    introduce = UEditorField('介绍', width=600, height=300, )
+    theory = UEditorField('理论', width=600, height=300, )
+    notice = UEditorField('须知', width=600, height=300, )
 
     class Meta:
         verbose_name = '测试说明'
