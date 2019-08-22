@@ -155,19 +155,22 @@ class Wxauthor(graphene.Mutation):
 
         auth_token = uuid.uuid1()
         value = returnOpenid(js_code)
-        result = search_user(value.get('openid'))
+        # result = search_user(value.get('openid'))
         openid = value.get('openid')
+        result = UserModel.objects.filter(openid=openid, is_superuser=0).exists()
         if not result:
             user_info = UserModel(
                 openid=openid,
                 username=openid
             )
             user_info.save()
+            message = "创建openid"
 
         print(auth_token)
+        print(openid)
         cache.set(auth_token, value, 60 * 60 * 5)
-
-        return Wxauthor(result=result, auth_token=auth_token,  message="openid保存到数据库")
+        message = "openid已存在"
+        return Wxauthor(result=result, auth_token=auth_token,  message=message)
 
 
 class MobileVerifyData(graphene.InputObjectType):
