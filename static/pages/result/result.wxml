@@ -1,8 +1,0 @@
-<view class="body">
-  <view class="top">
-    <image src="../../images/vericon001.png"></image>
-    <view>
-      您好！您将在3个工作日之后收到报告，请关注小程序，进入“我的”查看您的个人报告。</view>
-  </view>
-
-</view>
