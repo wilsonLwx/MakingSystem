@@ -23,7 +23,7 @@ from makingsystem import schema
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('graphql/', csrf_exempt(jwt_cookie(GraphQLView.as_view(graphiql=True, schema=schema)))),
+    path('graphql/', csrf_exempt(jwt_cookie(GraphQLView.as_view(graphiql=True)))),
     path('ueditor/', include('DjangoUeditor.urls')),
     path('users/', include('users.urls')),
 ]
