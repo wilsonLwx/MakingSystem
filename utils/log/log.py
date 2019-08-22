@@ -1,5 +1,3 @@
-
-
 # LOGGING = {
 #     'version': 1,
 #     'disable_existing_loggers': False,
@@ -75,6 +73,7 @@ import datetime
 import logging
 import logging.config
 
+
 def genLogDict(logDir, logFile):
     '''
     配置日志格式的字典
@@ -105,7 +104,7 @@ def genLogDict(logDir, logFile):
                 "formatter": "simple",
                 "filename": os.path.join(logDir, logFile),
                 'mode': 'w+',
-                "maxBytes": 1024*1024*5,  # 5 MB
+                "maxBytes": 1024 * 1024 * 5,  # 5 MB
                 "backupCount": 20,
                 "encoding": "utf8"
             },

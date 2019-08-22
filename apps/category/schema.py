@@ -11,12 +11,12 @@ from datetime import datetime
 from makingsystem.settings.base import MEDIA_ROOT
 
 
-class LeaderTestInfo(graphene.ObjectType):
-    name = graphene.String()
-    url = graphene.String()
-    title = graphene.String()
-    image = graphene.String()
-    des = graphene.String()
+# class LeaderTestInfo(graphene.ObjectType):
+#     name = graphene.String()
+#     url = graphene.String()
+#     title = graphene.String()
+#     image = graphene.String()
+#     des = graphene.String()
 
 
 class LeaderTestInfo(graphene.ObjectType):
@@ -29,10 +29,25 @@ class LeaderTestType(graphene.ObjectType):
     group = graphene.List(LeaderTestInfo)
 
 
+<<<<<<< HEAD
 class Query:
     leader_test = graphene.Field(LeaderTestType)
     courses = graphene.Field(LeaderTestType)
     indexbanners = graphene.Field(LeaderTestType)
+=======
+class BannerType(LeaderTestType):
+    pass
+
+
+class IndexBannerType(LeaderTestType):
+    pass
+
+
+class Query(graphene.ObjectType):
+    leader_test = graphene.Field(LeaderTestType)
+    courses = graphene.Field(BannerType)
+    indexbanners = graphene.Field(IndexBannerType)
+>>>>>>> 215ccbc5a3588fb4fa8f3a0aa6018a9ca1659028
 
     def resolve_leader_test(self, info):
         leader_test_obj = TestDetailsModel.objects.filter(is_index_show=True, push_time__lt=datetime.now())
@@ -43,10 +58,12 @@ class Query:
         # 首页---课程分类
         banner_obj = BannerModel.objects.filter(is_show=True, push_time__lt=datetime.now())
         banner_info = banner_obj.values_list('title', 'url', 'image')
-        return LeaderTestType(group=[LeaderTestInfo(title=i[0], url=i[1], image=i[2]) for i in banner_info])
+        return BannerType(group=[LeaderTestInfo(title=i[0], url=i[1], image=i[2]) for i in banner_info])
 
     def resolve_indexbanners(self, info):
         # 首页 第一部分 轮播图
-        leader_test_obj = TestDetailsModel.objects.filter(is_index_show=True, push_time__lt=datetime.now())
+        name_list = TestNameModel.objects.filter(is_index_show=True).value_list('name')
+        leader_test_obj = TestDetailsModel.objects.filter(is_index_show=True, push_time__lt=datetime.now(),
+                                                          child_test_name__in=name_list)
         banner_info = leader_test_obj.values_list('title', 'url', 'image')
         return LeaderTestType(group=[LeaderTestInfo(title=i[0], url=i[1], image=i[2]) for i in banner_info])

@@ -14,7 +14,7 @@ class Users(AbstractUser):
     # )
 
     openid = models.CharField("用户唯一码", max_length=100, null=True)
-    mobile = models.CharField("手机号", max_length=11)
+    mobile = models.CharField("手机号", max_length=100)
     # gender = models.CharField("性别", max_length=20, choices=gender_choices, default='male')
     # email = models.EmailField("邮箱", max_length=20, blank=True, null=True)
     # school = models.CharField("学校", max_length=20, null=True)
@@ -45,4 +45,3 @@ class CollectInfo(models.Model):
     class Meta:
         verbose_name = '数据统计'
         verbose_name_plural = verbose_name
-

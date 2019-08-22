@@ -19,11 +19,9 @@ from graphene_django.views import GraphQLView
 from graphql_jwt.decorators import jwt_cookie
 from django.views.decorators.csrf import csrf_exempt
 
-from makingsystem import schema
+from makingsystem.schema import schema
+from .views import IndexView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('graphql/', csrf_exempt(jwt_cookie(GraphQLView.as_view(graphiql=True, schema=schema)))),
-    path('ueditor/', include('DjangoUeditor.urls')),
-    path('users/', include('users.urls')),
+    path('index/', IndexView.as_view(), name='index'),
 ]

@@ -14,6 +14,7 @@ class RegisterView(View):
     """
     执行注册逻辑
     """
+
     def get(self, request):
         pass
 
@@ -25,6 +26,7 @@ class ActiveView(View):
     """
     激活用户
     """
+
     def get(self, request, token):
         pass
 
@@ -33,11 +35,13 @@ class LoginView(View):
     """
     返回登录界面
     """
+
     def get(self, request):
         pass
 
     def post(self, request):
         pass
+
 
 class LogoutView(View):
     """
@@ -47,3 +51,10 @@ class LogoutView(View):
     def get(self, request):
         pass
 
+
+class IndexView(View):
+    """测试首页"""
+
+    def get(self, request):
+        context = {}
+        return render(request, 'index.html', {context: context})

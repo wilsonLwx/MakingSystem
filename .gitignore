@@ -109,4 +109,6 @@ migrations/
 media/
 dev.py
 
+my_graphql.py
 
+learn_from_this.txt
