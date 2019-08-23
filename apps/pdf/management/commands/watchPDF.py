@@ -27,7 +27,9 @@ class MyHandler(FileSystemEventHandler):
     def on_created(self, event):
         if event.is_directory:
             return
+        self.xfer.initAliyun()
         self.xfer.upload(event.src_path)
+        self.xfer.clearAliyun()
 
     def on_modified(self, event):
         self.on_created(event)

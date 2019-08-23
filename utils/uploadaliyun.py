@@ -66,7 +66,7 @@ class Xfer(object):
                 user.mobile = mobileNum
                 user.username = mobileNum
                 user.save()
-            PDFInfo.user = user.id
+            PDFInfo.user = user
             PDFInfo.save()
             data = zfile.read(fileN)
             self.bucket.put_object(name, data)
