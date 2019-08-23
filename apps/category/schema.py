@@ -10,9 +10,6 @@ from .models import Banner as BannerModel
 from .models import TestIn as TestInModel
 from datetime import datetime
 
-x = Xfer()
-x.initAliyun()
-
 
 class TestInType(DjangoObjectType):
     class Meta:
@@ -48,6 +45,8 @@ class Query(graphene.ObjectType):
         leader_test_obj = TestDetailsModel.objects.filter(is_index_show=True, push_time__lt=datetime.now())
         banner_info = leader_test_obj.values_list('title', 'url', 'image', 'test_number', 'test_dec')
         group = []
+        x = Xfer()
+        x.initAliyun()
 
         for i in banner_info:
             title = i[0]
@@ -64,6 +63,8 @@ class Query(graphene.ObjectType):
         banner_obj = BannerModel.objects.filter(is_show=True, push_time__lt=datetime.now())
         banner_info = banner_obj.values_list('title', 'url', 'image')
         group = []
+        x = Xfer()
+        x.initAliyun()
         for i in banner_info:
             title = i[0]
             url = i[1]
@@ -80,6 +81,8 @@ class Query(graphene.ObjectType):
                                                           child_test_name__name__in=name_list)
         banner_info = leader_test_obj.values_list('title', 'url', 'image')
         group = []
+        x = Xfer()
+        x.initAliyun()
         for i in banner_info:
             title = i[0]
             url = i[1]
