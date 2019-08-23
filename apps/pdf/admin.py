@@ -8,7 +8,7 @@ class PDFAdmin(admin.ModelAdmin):
     list_display = ['name']
 
 
-class PDFuploadAdmin():
+class PDFuploadAdmin(admin.ModelAdmin):
     """PDF上传"""
     list_display = ['file', 'name']
 
