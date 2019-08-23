@@ -10,7 +10,7 @@ class Banner(models.Model):
     """课程分类"""
     title = models.CharField('标题', max_length=100)
     image = models.ImageField('轮播图', upload_to='image/', max_length=100)
-    # url = models.URLField('链接地址', max_length=200)
+    url = models.URLField('链接地址', max_length=200)
     is_show = models.BooleanField('是否首页显示', default=True)
     test_number = models.IntegerField('测试人数', default=0)
     push_time = models.DateTimeField('推送时间', default=datetime.now)
@@ -44,7 +44,7 @@ class TestDetails(models.Model):
                                         related_name='child_test_name', verbose_name='二级测试名称')
     title = models.CharField('标题', max_length=100)
     image = models.ImageField('轮播图', upload_to='image/', max_length=100)
-    # url = models.URLField('链接地址', max_length=200)
+    url = models.URLField('链接地址', max_length=200)
     is_index_show = models.BooleanField('是否首页显示', default=True)
     is_class_show = models.BooleanField('是否分类页显示', default=True)
     test_number = models.IntegerField('测试人数', default=0)
