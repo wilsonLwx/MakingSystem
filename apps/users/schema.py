@@ -145,8 +145,6 @@ class Wxauthor(graphene.Mutation):
         return Wxauthor(result=True, auth_token=auth_token,  message=message)
 
 
-
-
 class MobileVerifyData(graphene.InputObjectType):
     phoneNum = graphene.String(required=True)
 
@@ -189,10 +187,11 @@ class MobileVerify(graphene.Mutation):
             LOG.error(e)
             return MobileVerify(result=False, message="发送短信异常")
 
-        cache.set(phone_num, smsCode, 500)
         if result == 0:
+            cache.set(phone_num, smsCode, 500)
             return MobileVerify(result=True, message="发送短信成功")
         else:
+            cache.delete(phone_num)
             return MobileVerify(result=False, message="发送短信失败")
 
 
@@ -217,10 +216,10 @@ class SearchMobile(graphene.Mutation):
         value = cache.get(auth_token)
         openid = value.get('openid')
 
-        userInfo = UserModel.objects.filter(openid=openid)
-        if not userInfo.exists():
+        userInfo = UserModel.objects.filter(openid=openid).first()
+        if not userInfo:
             return SearchMobile(result=False, message="用户不存在")
-        if not userInfo.values('mobile'):
+        if not userInfo.mobile:
             return SearchMobile(result=False, message="手机号未验证")
         return SearchMobile(result=True, message=userInfo.mobile)
 

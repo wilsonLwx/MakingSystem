@@ -6,13 +6,15 @@ import zipfile
 
 from pdf.models import PDF
 from users.models import Users
-from makingsystem.settings import config
+from makingsystem.settings import config, MEDIA_ROOT
 # 用户登录名称 object-oss@1463266644828335.onaliyun.com
 # AccessKey ID LTAIeFNriSXX6ySq
 # AccessKeySecret QHdxPWx7JU9q6Y55D3feQxlwcfZb66
 from django.db import connection
 import logging
 from utils.log import log
+
+from django.contrib import admin
 
 log.initLogConf()
 
@@ -90,6 +92,23 @@ class Xfer(object):
     def sign_url(self, name):
         url = self.bucket.sign_url('GET', name, 60 * 30)
         return url
+
+
+# class UploadImageAdmin(admin.ModelAdmin):
+#     """
+#     自动上传新建对象的图片至阿里云
+#     """
+#
+#     def save_model(self, request, obj, form, change):
+#         obj.save()
+#         # LOG.info('----- 开始上传 下载 至本地: %s' % obj.image)
+#         # zip_path = os.path.join(MEDIA_ROOT, str(obj.image))
+#         # xfer = Xfer()
+#         # xfer.initAliyun()
+#         # xfer.upload(str(obj.image), )
+#         # xfer.clearAliyun()
+#         print(obj.__dir__())
+
 
 
 if __name__ == '__main__':
