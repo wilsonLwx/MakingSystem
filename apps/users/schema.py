@@ -25,42 +25,6 @@ class Query(graphene.ObjectType):
     pass
 
 
-class InputData(graphene.InputObjectType):
-    id = graphene.ID(required=True)
-    old_pwd = graphene.String(required=True)
-    new_pwd = graphene.String(required=True)
-
-
-class ChangeInfo(graphene.Mutation):
-    class Arguments:
-        input_data = InputData(required=True)
-
-    ok = graphene.Boolean()
-    user = graphene.Field(UserType)
-
-    def mutate(self, info, *args, **kwargs):
-        input_data = kwargs.get('input_data')
-        pk = input_data.get('id')
-        new_pwd = input_data.get('new_pwd')
-        old_pwd = input_data.get('old_pwd')
-        try:
-            user_info = UserModel.objects.get(pk=pk)
-        except Exception as e:
-            raise GraphQLError('User is not existed, please check your input!')
-        user = info.context.user
-        if not user.is_authenticated:
-            raise Exception('Authentication credentials were not provided')
-
-        ok = user_info.check_password(old_pwd)
-        if ok:
-            user_info.set_password(new_pwd)
-            user_info.save()
-            ok = ok
-            return ChangeInfo(ok=ok, user=user_info)
-        else:
-            raise GraphQLError('Password authentication failed!')
-
-
 class RegisterData(graphene.InputObjectType):
     mobile = graphene.String(required=True)
     smsCode = graphene.String(required=True)
@@ -68,6 +32,9 @@ class RegisterData(graphene.InputObjectType):
 
 
 class Register(graphene.Mutation):
+    """
+    验证手机号
+    """
     class Arguments:
         registerData = RegisterData(required=True)
 
@@ -79,26 +46,27 @@ class Register(graphene.Mutation):
         smsCode = register_data.get('smsCode')
         mobile = register_data.get('mobile')
         auth_token = register_data.get('auth_token')
-
+        # 判断是否输入空信息
         if not all([smsCode, mobile]):
             raise GraphQLError("有空信息输入")
 
-        # user_info = UserModel.objects.filter(mobile=mobile).first()
-        # if user_info:
-        #     return Register(result=True, message="用户已注册")
         context = cache.get(mobile)
         value = cache.get(auth_token)
         openid = value.get('openid')
-        user_info = UserModel.objects.filter(openid=openid, mobile=mobile)
+        user_info = UserModel.objects.filter(openid=openid)
         if not user_info.exists():
             return Register(result=False, message="openid 未保存到数据库")
 
-        print(value)
-        print(type(value))
+        LOG.info(value)
+        # 检查验证码
         if not context:
             return Register(result=False, message="验证码已过期")
         if smsCode != context:
             return Register(result=False, message="验证码不匹配，请重新输入")
+        # 判断手机号是否保存
+        if user_info.mobile == mobile:
+            return Register(result=True, message="用户已存在")
+        # 保存手机号
         try:
             user_info.mobile = mobile
             user_info.save()
@@ -118,6 +86,9 @@ class WxauthorData(graphene.InputObjectType):
 
 
 class Wxauthor(graphene.Mutation):
+    """
+    微信认证
+    """
     class Arguments:
         wxauthordata = WxauthorData(required=True)
 
@@ -144,28 +115,33 @@ class Wxauthor(graphene.Mutation):
                 'session_key': session_key
             }
             return value
-
+        # 使用uuid 产生token
         auth_token = uuid.uuid1()
+        # 访问微信服务器获取openid
         value = returnOpenid(js_code)
         openid = value.get('openid')
-        print(value)
+        # 判断用户是否存在
         result = UserModel.objects.filter(openid=openid, is_superuser=0).exists()
-
+        # 如果 openid不存在报错
+        if not openid:
+            message = "openid为空"
+            result = False
+            return Wxauthor(result=result, auth_token=None,  message=message)
+        # 有 openid 无用户 创建用户
         if all([openid, not result]):
             user_info = UserModel(
                 openid=openid,
                 username=openid
             )
             user_info.save()
-            message = "创建openid"
-        if not openid:
-            message = "openid为空"
-            result = False
-            return Wxauthor(result=result, auth_token=None,  message=message)
-        print(auth_token)
-        print(openid)
+            message = "创建用户"
+        else:
+            message = '用户已存在'
+        LOG.info(auth_token)
+        LOG.info(openid)
+        # auth_token 存入redis 缓存
         cache.set(auth_token, value, 60 * 60 * 5)
-        message = "openid已存在"
+
         return Wxauthor(result=True, auth_token=auth_token,  message=message)
 
 
@@ -174,6 +150,9 @@ class MobileVerifyData(graphene.InputObjectType):
 
 
 class MobileVerify(graphene.Mutation):
+    """
+    发送手机验证码
+    """
     class Arguments:
         mobileverifydata = MobileVerifyData(required=True)
 
@@ -191,14 +170,16 @@ class MobileVerify(graphene.Mutation):
         # 查找数据库是否注册过
         user = UserModel.objects.filter(mobile=phone_num)
         LOG.info('用户未注册')
-
+        # 判断用户是否存在
         if user.exists():
             return MobileVerify(result=True, message="用户已注册")
-
+        # 生成验证码
         smsCode = '%06d' % random.randint(0, 999999)
+
         if cache.get(phone_num):
             LOG.debug(cache.get(phone_num))
             return MobileVerify(result=True, message="验证码未过期")
+        # 发送验证码
         try:
             ccp = CCP()
             result = ccp.sendTemplateSMS(phone_num, [smsCode, '5'], 1)
@@ -214,7 +195,6 @@ class MobileVerify(graphene.Mutation):
 
 
 class Mutation(graphene.ObjectType):
-    change_info = ChangeInfo.Field()
     register = Register.Field()
     wxauthor = Wxauthor.Field()
     mobileverify = MobileVerify.Field()

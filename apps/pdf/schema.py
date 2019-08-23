@@ -26,7 +26,7 @@ class Query(graphene.ObjectType):
         value = cache.get(auth_token)
 
         if not value:
-            raise GraphQLError(f"User is not exist{cache.__dict__}")
+            raise GraphQLError(f"User is not exist")
         open_id = value.get('openid')
         user_obj = UsersModel.objects.filter(openid=open_id)
         group = []
