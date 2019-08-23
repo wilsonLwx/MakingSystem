@@ -44,7 +44,7 @@ class MyHandler(FileSystemEventHandler):
 class Command(BaseCommand):
     def handle(self, *args, **options):
         print('----开始监控是否有PDF文档上传----------------')
-        path = MEDIA_ROOT + '/PDF/'
+        path = MEDIA_ROOT + '/pdf/'
         observer = Observer()
         event_handler = MyHandler()
         observer.schedule(event_handler, path, True)
