@@ -220,7 +220,7 @@ class SearchMobile(graphene.Mutation):
         userInfo = UserModel.objects.filter(openid=openid)
         if not userInfo.exists():
             return SearchMobile(result=False, message="用户不存在")
-        if not userInfo.mobile:
+        if not userInfo.values('mobile'):
             return SearchMobile(result=False, message="手机号未验证")
         return SearchMobile(result=True, message=userInfo.mobile)
 
