@@ -1,7 +1,10 @@
 from django.contrib import admin
 
 # Register your models here.
+
+
 from .models import Users, CollectInfo
+from utils.get_collect_info import get_info
 
 
 class UsersAdmin(admin.ModelAdmin):
@@ -11,6 +14,12 @@ class UsersAdmin(admin.ModelAdmin):
 
 class CollectInfoAdmin(admin.ModelAdmin):
     """数据统计后台"""
+
+    def get_list_display(self, request):
+        # 后台统计数据
+        get_info()
+        return self.list_display
+
     list_display = ['registration', 'upload_number', 'read_number']
 
 

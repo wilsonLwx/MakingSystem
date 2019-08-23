@@ -1,22 +1,24 @@
 from django.contrib import admin
 from .models import Banner, TestDetails, TestIn, TestName
+from utils.image_uploadaliyun import UploadImageAdmin
 
 
 # Register your models here.
-class BannerAdmin(admin.ModelAdmin):
+class BannerAdmin(UploadImageAdmin):
     """课程分类"""
-    list_display = ['title', 'url', 'image', 'is_show', 'push_time']
+    list_display = ['title', 'image', 'is_show', 'push_time']
 
 
-class TestDetailsAdmin(admin.ModelAdmin):
+class TestDetailsAdmin(UploadImageAdmin):
     """测试详情"""
-    list_display = ['title', 'parent_test_name', 'child_test_name', 'image', 'url', 'test_number',
+
+    list_display = ['title', 'parent_test_name', 'child_test_name', 'image', 'test_number',
                     'is_index_show', 'is_class_show', 'push_time', ]
 
 
 class TestNameAdmin(admin.ModelAdmin):
     """测试分类名"""
-    list_display = ['name', 'parent']
+    list_display = ['name', 'parent', 'is_index_show']
 
 
 class TestInAdmin(admin.ModelAdmin):

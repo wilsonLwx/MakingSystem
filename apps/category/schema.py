@@ -1,6 +1,10 @@
 # __author__ = 'ly'
 # __date__ = '2019/08/15'
 
+from datetime import datetime
+import graphene
+from .models import Banner as BannerModel
+
 import graphene
 from graphene_django.types import DjangoObjectType
 from utils.uploadaliyun import Xfer
@@ -63,6 +67,7 @@ class Query(graphene.ObjectType):
 
     def resolve_indexbanners(self, info):
         # 首页 第一部分 轮播图
+
         name_list = TestNameModel.objects.filter(is_index_show=True).values_list('name')
         leader_test_obj = TestDetailsModel.objects.filter(is_index_show=True, push_time__lt=datetime.now(),
                                                           child_test_name__name__in=name_list)
