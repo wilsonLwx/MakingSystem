@@ -25,6 +25,8 @@ class Query(graphene.ObjectType):
     pass
 
 
+#
+
 class RegisterData(graphene.InputObjectType):
     mobile = graphene.String(required=True)
     smsCode = graphene.String(required=True)
@@ -76,9 +78,7 @@ class Register(graphene.Mutation):
         return Register(result=True, message="用户保存成功")
 
 
-class LoginData(graphene.InputObjectType):
-    mobile = graphene.String(required=True)
-    smsCode = graphene.String(required=True)
+###################################################
 
 
 class WxauthorData(graphene.InputObjectType):
@@ -145,6 +145,8 @@ class Wxauthor(graphene.Mutation):
         return Wxauthor(result=True, auth_token=auth_token,  message=message)
 
 
+
+
 class MobileVerifyData(graphene.InputObjectType):
     phoneNum = graphene.String(required=True)
 
@@ -194,7 +196,37 @@ class MobileVerify(graphene.Mutation):
             return MobileVerify(result=False, message="发送短信失败")
 
 
+class SearchMobileData(graphene.InputObjectType):
+    auth_token = graphene.String(required=True)
+
+
+class SearchMobile(graphene.Mutation):
+    """
+    手机号是否验证
+    """
+    class Arguments:
+        searchmobiledata = SearchMobileData(required=True)
+
+    result = graphene.Boolean()
+    message = graphene.String()
+
+    def mutate(self, info, *args, **kwargs):
+        searchmobiledata = kwargs.get('searchmobiledata')
+        auth_token = searchmobiledata.get('auth_token')
+
+        value = cache.get(auth_token)
+        openid = value.get('openid')
+
+        userInfo = UserModel.objects.filter(openid=openid)
+        if not userInfo.exists():
+            return SearchMobile(result=False, message="用户不存在")
+        if not userInfo.mobile:
+            return SearchMobile(result=False, message="手机号未验证")
+        return SearchMobile(result=True, message=userInfo.mobile)
+
+
 class Mutation(graphene.ObjectType):
-    register = Register.Field()
     wxauthor = Wxauthor.Field()
     mobileverify = MobileVerify.Field()
+    register = Register.Field()
+    searchmobile = SearchMobile.Field()
