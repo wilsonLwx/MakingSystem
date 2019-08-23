@@ -93,8 +93,6 @@ class Register(graphene.Mutation):
         if not user_info:
             return Register(result=False, message="openid 未保存到数据库")
 
-        print(value)
-        print(type(value))
         if not context:
             return Register(result=False, message="验证码已过期")
         if smsCode != context:
@@ -164,10 +162,9 @@ class Wxauthor(graphene.Mutation):
             )
             user_info.save()
 
-        print(auth_token)
         cache.set(auth_token, value, 7200)
 
-        return Wxauthor(result=result, auth_token=auth_token,  message="openid保存到数据库")
+        return Wxauthor(result=result, auth_token=auth_token, message="openid保存到数据库")
 
 
 class MobileVerifyData(graphene.InputObjectType):
