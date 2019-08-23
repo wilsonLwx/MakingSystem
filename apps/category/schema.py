@@ -2,15 +2,21 @@
 # __date__ = '2019/08/15'
 
 import graphene
-
+from graphene_django.types import DjangoObjectType
 from utils.uploadaliyun import Xfer
 from .models import TestDetails as TestDetailsModel
 from .models import TestName as TestNameModel
 from .models import Banner as BannerModel
+from .models import TestIn as TestInModel
 from datetime import datetime
 
 x = Xfer()
 x.initAliyun()
+
+
+class TestInType(DjangoObjectType):
+    class Meta:
+        model = TestInModel
 
 
 class LeaderTestInfo(graphene.ObjectType):
@@ -27,6 +33,7 @@ class Query(graphene.ObjectType):
     leader_test = graphene.Field(LeaderTestType)
     courses = graphene.Field(LeaderTestType)
     indexbanners = graphene.Field(LeaderTestType)
+    test_in = graphene.Field(TestInType)
 
     def resolve_leader_test(self, info):
         leader_test_obj = TestDetailsModel.objects.filter(is_index_show=True, push_time__lt=datetime.now())
@@ -68,3 +75,6 @@ class Query(graphene.ObjectType):
             group.append(LeaderTestInfo(title=title, url=url, image=image))
         x.clearAliyun()
         return LeaderTestType(group=group)
+
+    def resolve_test_in(self, info):
+        return TestInModel.objects.all().first()
