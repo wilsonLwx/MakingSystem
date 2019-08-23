@@ -51,7 +51,7 @@ class Query(graphene.ObjectType):
         # 首页---课程分类
         banner_obj = BannerModel.objects.filter(is_show=True, push_time__lt=datetime.now())
         banner_info = banner_obj.values_list('title', 'url', 'image')
-        return LeaderTestType(group=[LeaderTestInfo(title=i[0], url=i[1], image=i[2]) for i in banner_info])
+        return BannerType(group=[LeaderTestInfo(title=i[0], url=i[1], image=i[2]) for i in banner_info])
 
     def resolve_indexbanners(self, info):
         # 首页 第一部分 轮播图
