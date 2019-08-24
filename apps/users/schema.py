@@ -123,13 +123,7 @@ class MobileVerify(graphene.Mutation):
         # if not all([phone_num, verify_num]):
         #     return MobileVerify(result=False, message="参数不完整")
         # 查找数据库是否注册过
-        userInfo = UserModel.objects.filter(mobile=phone_num).first()
-        # 判断用户是否存在
-        if userInfo():
-            value = cache.get(autoToken)
-            openid = value.get('openid')
-            userInfo.update(openid=openid)
-            return MobileVerify(result=True, message="用户信息已存在")
+
         # 生成验证码
         smsCode = '%06d' % random.randint(0, 999999)
 
@@ -172,13 +166,13 @@ class Register(graphene.Mutation):
         register_data = kwargs.get('registerData')
         smsCode = register_data.get('smsCode')
         mobile = register_data.get('mobile')
-        auth_token = register_data.get('auth_token')
+        authToken = register_data.get('auth_token')
         # 判断是否输入空信息
         if not all([smsCode, mobile]):
             raise GraphQLError("有空信息输入")
 
         context = cache.get(mobile)
-        value = cache.get(auth_token)
+        value = cache.get(authToken)
         openid = value.get('openid')
         # user_info = UserModel.objects.filter(openid=openid)
         # if not user_info.exists():
@@ -191,11 +185,24 @@ class Register(graphene.Mutation):
         if smsCode != context:
             return Register(result=False, message="验证码不匹配，请重新输入")
         # 保存手机号
-        userInfo = UserModel()
-        try:
+        userInfo = UserModel.objects.filter(mobile=mobile).first()
+        # 判断用户是否存在
+        if userInfo():
+            # value = cache.get(authToken)
+            # openid = value.get('openid')
+            # userInfo.update(openid=openid)
+            userInfo.username = mobile
             userInfo.mobile = mobile
             userInfo.openid = openid
+            userInfo.save()
+            return MobileVerify(result=True, message="用户信息已存在")
+
+        userInfo = UserModel()
+
+        try:
             userInfo.username = mobile
+            userInfo.mobile = mobile
+            userInfo.openid = openid
             userInfo.save()
         except db.IntegrityError:
             raise Exception("保存数据库失败")
