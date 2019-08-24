@@ -171,6 +171,7 @@ class Register(graphene.Mutation):
         context = cache.get(mobile)
         value = cache.get(authToken)
         openid = value.get('openid')
+        LOG.info(context, value)
         # user_info = UserModel.objects.filter(openid=openid)
         # if not user_info.exists():
         #     return Register(result=False, message="openid 未保存到数据库")
@@ -194,13 +195,17 @@ class Register(graphene.Mutation):
             userInfo.save()
             return MobileVerify(result=True, message="用户信息已存在")
 
-        userInfo = UserModel()
 
         try:
-            userInfo.username = mobile
-            userInfo.mobile = mobile
-            userInfo.openid = openid
-            userInfo.save()
+            UserModel.objects.create(
+                username=mobile,
+                openid=openid,
+                mobile=mobile
+            )
+            # userInfo.username = mobile
+            # userInfo.mobile = mobile
+            # userInfo.openid = openid
+            # userInfo.save()
         except db.IntegrityError:
             raise Exception("保存数据库失败")
         # cache.delete('smsCode')

@@ -22,9 +22,6 @@ log.initLogConf()
 LOG = logging.getLogger(__file__)
 
 
-# cursor = connection.cursor()
-
-
 class Xfer(object):
 
     def __new__(cls, *args, **kwargs):
@@ -65,28 +62,31 @@ class Xfer(object):
                 continue
             # name = fileN.encode('cp437').decode('gbk')
             name = fileN
-            LOG.info('###name:', name)
             mobile = re.compile('1[345678]\d{9}')
             mobileNum = mobile.search(name).group()
             userInfo = Users.objects.filter(mobile=mobileNum).first()
-            if not userInfo():
+            if not userInfo:
                 LOG.info("用户未保存")
                 userInfo = Users()
                 userInfo.mobile = mobileNum
                 userInfo.username = mobileNum
                 userInfo.save()
+            PDFname = name.split('/')[-1]
+            title_name = PDFname.split('+')[0]
+            test_obj = TestDetails.objects.filter(title=title_name).first()
+            banner_obj = Banner.objects.filter(title=title_name).first()
+            print(title_name, test_obj)
 
-            title_name = fileN.split('+')[0]
-            test_obj = TestDetails.objects.filter(title=title_name)
             if test_obj:
-                test_obj.test_number = int(test_obj.test_number) + 1
-            else:
-                banner_obj = Banner.objects.filter(title=title_name)
-                if banner_obj:
-                    banner_obj.test_number = int(banner_obj.test_number) + 1
+                test_obj.test_number = 1 if test_obj.test_number is None else test_obj.test_number + 1
+            elif banner_obj:
+                banner_obj.test_number = 1 if banner_obj.test_number is None else banner_obj.test_number + 1
+
+            if PDF.objects.filter(name=PDFname).first():
+                continue
 
             PDFInfo = PDF()
-            PDFInfo.name = name.split('/')[-1]
+            PDFInfo.name = PDFname
             PDFInfo.aliosspath = name
             LOG.info('### mobileNum:', mobileNum)
             PDFInfo.user = userInfo
@@ -112,16 +112,15 @@ class uploadzipadmin(admin.ModelAdmin):
         obj.save()
         # LOG.info('----- 开始上传 下载 至本地: %s' % obj.image)
         zip_path = os.path.join(MEDIA_ROOT, obj.file.name)
-        # xfer = Xfer()
-        # xfer.initAliyun()
-        # xfer.upload()
-        # xfer.clearAliyun()
+        xfer = Xfer()
+        xfer.initAliyun()
+        xfer.upload(zip_path)
+        xfer.clearAliyun()
 
-        print("@"*40)
-        print(obj.__dir__())
-        # print(obj.file.__dict__)
-        print("#"*50)
-        print(request.__dir__())
+        # print("@"*40)
+        # print(obj.__dir__())
+        # print("#"*50)
+        # print(request.__dir__())
         # print(obj.name())
         try:
             os.remove(zip_path)

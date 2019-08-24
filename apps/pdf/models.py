@@ -25,7 +25,7 @@ class PDFupload(models.Model):
     name = models.CharField(max_length=200, blank=True, verbose_name="文件名称")
 
     class Meta:
-        unique_together = ('file', 'name')
+        # unique_together = ('file', 'name')
         db_table = 'test_file'
         verbose_name = "文件"
         verbose_name_plural = verbose_name
