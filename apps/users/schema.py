@@ -100,7 +100,6 @@ class Wxauthor(graphene.Mutation):
 
 class MobileVerifyData(graphene.InputObjectType):
     phoneNum = graphene.String(required=True)
-    autoToken = graphene.String(required=True)
 
 
 class MobileVerify(graphene.Mutation):
