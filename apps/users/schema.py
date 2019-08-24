@@ -27,55 +27,7 @@ class Query(graphene.ObjectType):
 
 #
 
-class RegisterData(graphene.InputObjectType):
-    mobile = graphene.String(required=True)
-    smsCode = graphene.String(required=True)
-    auth_token = graphene.String(required=True)
 
-
-class Register(graphene.Mutation):
-    """
-    验证手机号
-    """
-    class Arguments:
-        registerData = RegisterData(required=True)
-
-    result = graphene.Boolean()
-    message = graphene.String()
-
-    def mutate(self, info, *args, **kwargs):
-        register_data = kwargs.get('registerData')
-        smsCode = register_data.get('smsCode')
-        mobile = register_data.get('mobile')
-        auth_token = register_data.get('auth_token')
-        # 判断是否输入空信息
-        if not all([smsCode, mobile]):
-            raise GraphQLError("有空信息输入")
-
-        context = cache.get(mobile)
-        value = cache.get(auth_token)
-        openid = value.get('openid')
-        user_info = UserModel.objects.filter(openid=openid)
-        if not user_info.exists():
-            return Register(result=False, message="openid 未保存到数据库")
-
-        LOG.info(value)
-        # 检查验证码
-        if not context:
-            return Register(result=False, message="验证码已过期")
-        if smsCode != context:
-            return Register(result=False, message="验证码不匹配，请重新输入")
-        # 判断手机号是否保存
-        if user_info.mobile == mobile:
-            return Register(result=True, message="用户已存在")
-        # 保存手机号
-        try:
-            user_info.mobile = mobile
-            user_info.save()
-        except db.IntegrityError:
-            raise Exception("保存数据库失败")
-        # cache.delete('smsCode')
-        return Register(result=True, message="用户保存成功")
 
 
 ###################################################
@@ -121,23 +73,24 @@ class Wxauthor(graphene.Mutation):
         value = returnOpenid(js_code)
         openid = value.get('openid')
         # 判断用户是否存在
-        result = UserModel.objects.filter(openid=openid, is_superuser=0).exists()
+        # result = UserModel.objects.filter(openid=openid, is_superuser=0).exists()
         # 如果 openid不存在报错
         if not openid:
             message = "openid为空"
             result = False
             return Wxauthor(result=result, auth_token=None,  message=message)
         # 有 openid 无用户 创建用户
-        if all([openid, not result]):
-            user_info = UserModel(
-                openid=openid,
-                username=openid
-            )
-            user_info.save()
-            message = "创建用户"
-        else:
-            message = '用户已存在'
+        # if all([openid, not result]):
+        #     user_info = UserModel(
+        #         openid=openid,
+        #         username=openid
+        #     )
+        #     user_info.save()
+        #     message = "创建用户"
+        # else:
+        #     message = '用户已存在'
         LOG.info(auth_token)
+        message = "openid 获取成功"
         LOG.info(openid)
         # auth_token 存入redis 缓存
         cache.set(auth_token, value, 60 * 60 * 5)
@@ -147,6 +100,7 @@ class Wxauthor(graphene.Mutation):
 
 class MobileVerifyData(graphene.InputObjectType):
     phoneNum = graphene.String(required=True)
+    autoToken = graphene.String(required=True)
 
 
 class MobileVerify(graphene.Mutation):
@@ -162,17 +116,20 @@ class MobileVerify(graphene.Mutation):
     def mutate(self, info, *args, **kwargs):
         mobileverifydata = kwargs.get('mobileverifydata')
         phone_num = mobileverifydata.get('phoneNum')
+        autoToken = mobileverifydata.get('autoToken')
         # verify_num = mobileverifydata.get('verifyNum')
         if not re.match(r'1[345678]\d{9}', phone_num):
             return MobileVerify(result=False, message="手机号码不是11位")
         # if not all([phone_num, verify_num]):
         #     return MobileVerify(result=False, message="参数不完整")
         # 查找数据库是否注册过
-        user = UserModel.objects.filter(mobile=phone_num)
-        LOG.info('用户未注册')
+        userInfo = UserModel.objects.filter(mobile=phone_num).first()
         # 判断用户是否存在
-        if user.exists():
-            return MobileVerify(result=True, message="用户已注册")
+        if userInfo():
+            value = cache.get(autoToken)
+            openid = value.get('openid')
+            userInfo.update(openid=openid)
+            return MobileVerify(result=True, message="用户信息已存在")
         # 生成验证码
         smsCode = '%06d' % random.randint(0, 999999)
 
@@ -188,11 +145,62 @@ class MobileVerify(graphene.Mutation):
             return MobileVerify(result=False, message="发送短信异常")
 
         if result == 0:
-            cache.set(phone_num, smsCode, 500)
+            cache.set(phone_num, smsCode, 60)
             return MobileVerify(result=True, message="发送短信成功")
         else:
             cache.delete(phone_num)
             return MobileVerify(result=False, message="发送短信失败")
+
+
+class RegisterData(graphene.InputObjectType):
+    mobile = graphene.String(required=True)
+    smsCode = graphene.String(required=True)
+    auth_token = graphene.String(required=True)
+
+
+class Register(graphene.Mutation):
+    """
+    验证手机号
+    """
+    class Arguments:
+        registerData = RegisterData(required=True)
+
+    result = graphene.Boolean()
+    message = graphene.String()
+
+    def mutate(self, info, *args, **kwargs):
+        register_data = kwargs.get('registerData')
+        smsCode = register_data.get('smsCode')
+        mobile = register_data.get('mobile')
+        auth_token = register_data.get('auth_token')
+        # 判断是否输入空信息
+        if not all([smsCode, mobile]):
+            raise GraphQLError("有空信息输入")
+
+        context = cache.get(mobile)
+        value = cache.get(auth_token)
+        openid = value.get('openid')
+        # user_info = UserModel.objects.filter(openid=openid)
+        # if not user_info.exists():
+        #     return Register(result=False, message="openid 未保存到数据库")
+
+        # LOG.info(value)
+        # 检查验证码
+        if not context:
+            return Register(result=False, message="验证码已过期")
+        if smsCode != context:
+            return Register(result=False, message="验证码不匹配，请重新输入")
+        # 保存手机号
+        userInfo = UserModel()
+        try:
+            userInfo.mobile = mobile
+            userInfo.openid = openid
+            userInfo.username = mobile
+            userInfo.save()
+        except db.IntegrityError:
+            raise Exception("保存数据库失败")
+        # cache.delete('smsCode')
+        return Register(result=True, message="用户保存成功")
 
 
 class SearchMobileData(graphene.InputObjectType):

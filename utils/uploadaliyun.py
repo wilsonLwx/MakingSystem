@@ -4,6 +4,7 @@ import re
 import oss2
 import zipfile
 
+from category.models import TestDetails, Banner
 from pdf.models import PDF
 from users.models import Users
 from makingsystem.settings import config, MEDIA_ROOT
@@ -64,23 +65,31 @@ class Xfer(object):
                 continue
             # name = fileN.encode('cp437').decode('gbk')
             name = fileN
-            print('###name:', name)
+            LOG.info('###name:', name)
             mobile = re.compile('1[345678]\d{9}')
             mobileNum = mobile.search(name).group()
-            # user = Users.objects.filter(mobile=mobileNum)
-            PDFInfo = PDF.objects.filter(user__mobile=mobileNum)
-            if not PDFInfo.exists():
-                print("用户未保存")
-                continue
+            userInfo = Users.objects.filter(mobile=mobileNum).first()
+            if not userInfo():
+                LOG.info("用户未保存")
+                userInfo = Users()
+                userInfo.mobile = mobileNum
+                userInfo.username = mobileNum
+                userInfo.save()
+
+            title_name = fileN.split('+')[0]
+            test_obj = TestDetails.objects.filter(title=title_name)
+            if test_obj:
+                test_obj.test_number = int(test_obj.test_number) + 1
+            else:
+                banner_obj = Banner.objects.filter(title=title_name)
+                if banner_obj:
+                    banner_obj.test_number = int(banner_obj.test_number) + 1
+
+            PDFInfo = PDF()
             PDFInfo.name = name.split('/')[-1]
             PDFInfo.aliosspath = name
-            print('### mobileNum:', mobileNum)
-            # if not user:
-            #     LOG.error(f"用户不存在")
-            #     user = Users()
-            #     user.mobile = mobileNum
-            #     user.username = mobileNum
-            #     user.save()
+            LOG.info('### mobileNum:', mobileNum)
+            PDFInfo.user = userInfo
             PDFInfo.save()
             data = zfile.read(fileN)
             self.bucket.put_object(name, data)
@@ -94,21 +103,30 @@ class Xfer(object):
         return url
 
 
-# class UploadImageAdmin(admin.ModelAdmin):
-#     """
-#     自动上传新建对象的图片至阿里云
-#     """
-#
-#     def save_model(self, request, obj, form, change):
-#         obj.save()
-#         # LOG.info('----- 开始上传 下载 至本地: %s' % obj.image)
-#         # zip_path = os.path.join(MEDIA_ROOT, str(obj.image))
-#         # xfer = Xfer()
-#         # xfer.initAliyun()
-#         # xfer.upload(str(obj.image), )
-#         # xfer.clearAliyun()
-#         print(obj.__dir__())
+class uploadzipadmin(admin.ModelAdmin):
+    """
+    自动上传新建对象的图片至阿里云
+    """
 
+    def save_model(self, request, obj, form, change):
+        obj.save()
+        # LOG.info('----- 开始上传 下载 至本地: %s' % obj.image)
+        zip_path = os.path.join(MEDIA_ROOT, obj.file.name)
+        # xfer = Xfer()
+        # xfer.initAliyun()
+        # xfer.upload()
+        # xfer.clearAliyun()
+
+        print("@"*40)
+        print(obj.__dir__())
+        # print(obj.file.__dict__)
+        print("#"*50)
+        print(request.__dir__())
+        # print(obj.name())
+        try:
+            os.remove(zip_path)
+        except:
+            pass
 
 
 if __name__ == '__main__':
