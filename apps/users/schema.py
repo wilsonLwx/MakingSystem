@@ -116,8 +116,6 @@ class MobileVerify(graphene.Mutation):
     def mutate(self, info, *args, **kwargs):
         mobileverifydata = kwargs.get('mobileverifydata')
         phone_num = mobileverifydata.get('phoneNum')
-        autoToken = mobileverifydata.get('autoToken')
-        # verify_num = mobileverifydata.get('verifyNum')
         if not re.match(r'1[345678]\d{9}', phone_num):
             return MobileVerify(result=False, message="手机号码不是11位")
         # if not all([phone_num, verify_num]):
