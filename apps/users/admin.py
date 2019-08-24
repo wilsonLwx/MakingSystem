@@ -1,5 +1,3 @@
-import copy
-
 from django.contrib import admin
 
 # Register your models here.
@@ -18,10 +16,6 @@ class CollectInfoAdmin(admin.ModelAdmin):
     """数据统计后台"""
 
     def get_list_display(self, request):
-        """
-        Return a sequence containing the fields to be displayed on the
-        changelist.
-        """
         # 后台统计数据
         get_info()
         return self.list_display

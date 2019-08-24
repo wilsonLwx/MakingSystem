@@ -1,40 +1,16 @@
-import os
-
 from django.contrib import admin
-
-from makingsystem.settings import MEDIA_ROOT
 from .models import Banner, TestDetails, TestIn, TestName
-from utils.image_uploadaliyun import Xfer
+from utils.image_uploadaliyun import UploadImageAdmin
 
 
 # Register your models here.
-class BannerAdmin(admin.ModelAdmin):
+class BannerAdmin(UploadImageAdmin):
     """课程分类"""
     list_display = ['title', 'image', 'is_show', 'push_time']
 
 
-class TestDetailsAdmin(admin.ModelAdmin):
+class TestDetailsAdmin(UploadImageAdmin):
     """测试详情"""
-
-    def save_model(self, request, obj, form, change):
-        print('---保存了图片--- %s' % obj.image)
-        obj.save()
-        print('----- 开始上传图片至阿里云: %s' % obj.image)
-        image_path = os.path.join(MEDIA_ROOT, str(obj.image))
-        xfer = Xfer()
-        xfer.initAliyun()
-        print('### form:', form)
-        print('###  image_path', image_path)
-        print('request--------->', request)
-        # xfer.upload(str(obj.image), image_path)
-        # xfer.upload(obj.image, request)
-        # xfer.upload(str(obj.image), obj.image)
-
-        # xfer.clearAliyun()
-
-        # print('--------从阿里云获取url:-----------')
-        # url = xfer.sign_url(str(obj.image))
-        # print('----阿里云 url:', url)
 
     list_display = ['title', 'parent_test_name', 'child_test_name', 'image', 'test_number',
                     'is_index_show', 'is_class_show', 'push_time', ]
