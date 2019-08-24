@@ -181,6 +181,8 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # 指定根目录
 
+STATIC_ROOT = '/home/hw/static'
+
 # FILE_URL = 'pdf/%Y%m/'
 
 FILE_URL = 'PDF/'

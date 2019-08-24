@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Banner, TestDetails, TestIn, TestName
-from utils.image_uploadaliyun import UploadImageAdmin
+from utils.uploadaliyun import UploadImageAdmin
 
 
 # Register your models here.
