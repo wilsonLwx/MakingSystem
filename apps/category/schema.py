@@ -47,7 +47,6 @@ class Query(graphene.ObjectType):
         group = []
         x = Xfer()
         x.initAliyun()
-
         for i in banner_info:
             title = i[0]
             url = i[1]
@@ -55,7 +54,7 @@ class Query(graphene.ObjectType):
             test_number = i[3]
             test_dec = i[4]
             group.append(TestDetailInfo(title=title, url=url, image=image, test_number=test_number, test_dec=test_dec))
-        x.clearAliyun()
+
         return TestDetailType(group=group)
 
     def resolve_courses(self, info):
@@ -70,7 +69,7 @@ class Query(graphene.ObjectType):
             url = i[1]
             image = x.sign_url(i[2])
             group.append(LeaderTestInfo(title=title, url=url, image=image))
-        x.clearAliyun()
+
         return LeaderTestType(group=group)
 
     def resolve_indexbanners(self, info):
@@ -88,7 +87,6 @@ class Query(graphene.ObjectType):
             url = i[1]
             image = x.sign_url(i[2])
             group.append(LeaderTestInfo(title=title, url=url, image=image))
-        x.clearAliyun()
         return LeaderTestType(group=group)
 
     def resolve_test_in(self, info):
