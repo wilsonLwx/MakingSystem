@@ -3,11 +3,15 @@
 """
 获取统计信息
 """
-from users.models import Users  # 注册人数
+from users.models import Users, CollectInfo  # 注册人数
 from pdf.models import PDF  # 上传报告数量
 
 
 def get_info():
     registration = Users.objects.all().count()
     upload_number = PDF.objects.all().count()
-    # read_number =
+    info = CollectInfo()
+    info.registration = int(registration) + 1
+    info.read_number = int(registration) + 1
+    info.upload_number = int(registration) + 1
+    info.save()
