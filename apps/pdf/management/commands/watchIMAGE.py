@@ -6,7 +6,8 @@ from watchdog.events import *
 
 from utils.log import log
 from makingsystem.settings import MEDIA_ROOT
-from utils.uploadaliyun import Xfer
+from utils.image_uploadaliyun import Xfer
+
 log.initLogConf()
 LOG = logging.getLogger(__file__)
 
@@ -28,7 +29,8 @@ class MyHandler(FileSystemEventHandler):
         if event.is_directory:
             return
         self.xfer.initAliyun()
-        self.xfer.upload(event.src_path)
+        path = 'image/' + event.src_path
+        self.xfer.upload(path)
         self.xfer.clearAliyun()
 
     def on_modified(self, event):
@@ -43,8 +45,8 @@ class MyHandler(FileSystemEventHandler):
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        print('----开始监控是否有PDF文档上传----------------')
-        path = MEDIA_ROOT + '/pdf/'
+        print('----开始监控是否有测试图片上传----------------')
+        path = MEDIA_ROOT + '/image/'
         observer = Observer()
         event_handler = MyHandler()
         observer.schedule(event_handler, path, True)
