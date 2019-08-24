@@ -10,7 +10,9 @@ from pdf.models import PDF  # 上传报告数量
 def get_info():
     registration = Users.objects.all().count()
     upload_number = PDF.objects.all().count()
-    info = CollectInfo()
+    info = CollectInfo.objects.first()
+    if not info:
+        info = CollectInfo()
     info.registration = int(registration) + 1
     info.read_number = int(registration) + 1
     info.upload_number = int(registration) + 1

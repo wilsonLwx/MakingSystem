@@ -51,7 +51,8 @@ class Xfer(object):
 
     def upload(self, name, image_path):
         LOG.info(f'{"+" * 10}uploading {"+" * 10}')
-        self.bucket.put_object_from_file(name, image_path)
+        # self.bucket.put_object_from_file(name, image_path)
+        self.bucket.put_object(name, image_path)
 
     def sign_url(self, name):
         url = self.bucket.sign_url('GET', name, 60 * 30)

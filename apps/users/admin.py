@@ -1,7 +1,12 @@
+import copy
+
 from django.contrib import admin
 
 # Register your models here.
+
+
 from .models import Users, CollectInfo
+from utils.get_collect_info import get_info
 
 
 class UsersAdmin(admin.ModelAdmin):
@@ -12,24 +17,14 @@ class UsersAdmin(admin.ModelAdmin):
 class CollectInfoAdmin(admin.ModelAdmin):
     """数据统计后台"""
 
-    def get_inline_instances(self, request, obj=None):
+    def get_list_display(self, request):
+        """
+        Return a sequence containing the fields to be displayed on the
+        changelist.
+        """
         # 后台统计数据
-
-        #  后台显示数据
-        inline_instances = []
-        for inline_class in self.inlines:
-            inline = inline_class(self.model, self.admin_site)
-            if request:
-                inline_has_add_permission = inline._has_add_permission(request, obj)
-                if not (inline.has_view_or_change_permission(request, obj) or
-                        inline_has_add_permission or
-                        inline.has_delete_permission(request, obj)):
-                    continue
-                if not inline_has_add_permission:
-                    inline.max_num = 0
-            inline_instances.append(inline)
-
-        return inline_instances
+        get_info()
+        return self.list_display
 
     list_display = ['registration', 'upload_number', 'read_number']
 
