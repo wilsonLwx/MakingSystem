@@ -25,11 +25,6 @@ class Query(graphene.ObjectType):
     pass
 
 
-#
-
-
-
-
 ###################################################
 
 
@@ -79,16 +74,7 @@ class Wxauthor(graphene.Mutation):
             message = "openid为空"
             result = False
             return Wxauthor(result=result, auth_token=None,  message=message)
-        # 有 openid 无用户 创建用户
-        # if all([openid, not result]):
-        #     user_info = UserModel(
-        #         openid=openid,
-        #         username=openid
-        #     )
-        #     user_info.save()
-        #     message = "创建用户"
-        # else:
-        #     message = '用户已存在'
+
         LOG.info(auth_token)
         message = "openid 获取成功"
         LOG.info(openid)
@@ -117,10 +103,6 @@ class MobileVerify(graphene.Mutation):
         phone_num = mobileverifydata.get('phoneNum')
         if not re.match(r'1[345678]\d{9}', phone_num):
             return MobileVerify(result=False, message="手机号码不是11位")
-        # if not all([phone_num, verify_num]):
-        #     return MobileVerify(result=False, message="参数不完整")
-        # 查找数据库是否注册过
-
         # 生成验证码
         smsCode = '%06d' % random.randint(0, 999999)
 
@@ -134,9 +116,9 @@ class MobileVerify(graphene.Mutation):
         except Exception as e:
             LOG.error(e)
             return MobileVerify(result=False, message="发送短信异常")
-
+        # 判断发送
         if result == 0:
-            cache.set(phone_num, smsCode, 60)
+            cache.set(phone_num, smsCode, 60 * 2)
             return MobileVerify(result=True, message="发送短信成功")
         else:
             cache.delete(phone_num)
@@ -175,7 +157,6 @@ class Register(graphene.Mutation):
         # user_info = UserModel.objects.filter(openid=openid)
         # if not user_info.exists():
         #     return Register(result=False, message="openid 未保存到数据库")
-
         # LOG.info(value)
         # 检查验证码
         if not context:
@@ -185,7 +166,7 @@ class Register(graphene.Mutation):
         # 保存手机号
         userInfo = UserModel.objects.filter(mobile=mobile).first()
         # 判断用户是否存在
-        if userInfo():
+        if userInfo:
             # value = cache.get(authToken)
             # openid = value.get('openid')
             # userInfo.update(openid=openid)

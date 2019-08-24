@@ -61,9 +61,16 @@ class Xfer(object):
             if fileN.endswith('/'):
                 continue
             # name = fileN.encode('cp437').decode('gbk')
+
             name = fileN
             mobile = re.compile('1[345678]\d{9}')
             mobileNum = mobile.search(name).group()
+            PDFname = name.split('/')[-1]
+            title_name = PDFname.split('+')[0]
+
+            if PDF.objects.filter(name=PDFname).first():
+                continue
+
             userInfo = Users.objects.filter(mobile=mobileNum).first()
             if not userInfo:
                 LOG.info("用户未保存")
@@ -71,24 +78,22 @@ class Xfer(object):
                 userInfo.mobile = mobileNum
                 userInfo.username = mobileNum
                 userInfo.save()
-            PDFname = name.split('/')[-1]
-            title_name = PDFname.split('+')[0]
             test_obj = TestDetails.objects.filter(title=title_name).first()
-            banner_obj = Banner.objects.filter(title=title_name).first()
             print(title_name, test_obj)
 
             if test_obj:
-                test_obj.test_number = 1 if test_obj.test_number is None else test_obj.test_number + 1
-            elif banner_obj:
-                banner_obj.test_number = 1 if banner_obj.test_number is None else banner_obj.test_number + 1
+                test_obj.test_number += 1
+                test_obj.save()
+            else:
+                banner_obj = Banner.objects.filter(title=title_name).first()
+                banner_obj.test_number += 1
+                banner_obj.save()
 
-            if PDF.objects.filter(name=PDFname).first():
-                continue
 
             PDFInfo = PDF()
             PDFInfo.name = PDFname
             PDFInfo.aliosspath = name
-            LOG.info('### mobileNum:', mobileNum)
+            LOG.info(f'### mobileNum:{mobileNum}')
             PDFInfo.user = userInfo
             PDFInfo.save()
             data = zfile.read(fileN)
@@ -98,6 +103,11 @@ class Xfer(object):
         except OSError as e:
             pass
 
+    def imageupload(self, name, image_path):
+        LOG.info(f'{"+" * 10}uploading {"+" * 10}')
+        self.bucket.put_object_from_file(name, image_path)
+
+
     def sign_url(self, name):
         url = self.bucket.sign_url('GET', name, 60 * 30)
         return url
@@ -105,7 +115,7 @@ class Xfer(object):
 
 class uploadzipadmin(admin.ModelAdmin):
     """
-    自动上传新建对象的图片至阿里云
+    自动上传新建对象的文件至阿里云
     """
 
     def save_model(self, request, obj, form, change):
@@ -126,6 +136,21 @@ class uploadzipadmin(admin.ModelAdmin):
             os.remove(zip_path)
         except:
             pass
+
+
+class UploadImageAdmin(admin.ModelAdmin):
+    """
+    自动上传新建对象的图片至阿里云
+    """
+
+    def save_model(self, request, obj, form, change):
+        obj.save()
+        LOG.info('----- 开始上传测试图片至阿里云: %s' % obj.image.name)
+        image_path = os.path.join(MEDIA_ROOT, obj.image.name)
+        xfer = Xfer()
+        xfer.initAliyun()
+        xfer.imageupload(obj.image.name, image_path)
+        xfer.clearAliyun()
 
 
 if __name__ == '__main__':
