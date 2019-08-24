@@ -22,6 +22,3 @@ DATABASES = {
 #         'PASSWORD': 'password1234',
 #     }
 # }
-
-
-

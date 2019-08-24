@@ -64,7 +64,7 @@ class ChangeInfo(graphene.Mutation):
 class RegisterData(graphene.InputObjectType):
     mobile = graphene.String(required=True)
     smsCode = graphene.String(required=True)
-    token = graphene.String(required=True)
+    auth_token = graphene.String(required=True)
 
 
 class Register(graphene.Mutation):
@@ -78,7 +78,7 @@ class Register(graphene.Mutation):
         register_data = kwargs.get('registerData')
         smsCode = register_data.get('smsCode')
         mobile = register_data.get('mobile')
-        token = register_data.get('token')
+        auth_token = register_data.get('auth_token')
 
         if not all([smsCode, mobile]):
             raise GraphQLError("有空信息输入")
@@ -87,7 +87,7 @@ class Register(graphene.Mutation):
         if user_info:
             return Register(result=True, message="用户已注册")
         context = cache.get(mobile)
-        value = cache.get(token)
+        value = cache.get(auth_token)
         openid = value.get('openid')
         user_info = UserModel.objects.filter(openid=openid).first()
         if not user_info:
@@ -122,7 +122,7 @@ class Wxauthor(graphene.Mutation):
         wxauthordata = WxauthorData(required=True)
 
     result = graphene.Boolean()
-    token = graphene.String()
+    auth_token = graphene.String()
     message = graphene.String()
 
     def mutate(self, info, *args, **kwargs):
@@ -153,7 +153,7 @@ class Wxauthor(graphene.Mutation):
             else:
                 return True
 
-        token = uuid.uuid1()
+        auth_token = uuid.uuid1()
         value = returnOpenid(js_code)
         result = search_user(value.get('openid'))
         openid = value.get('openid')
@@ -164,10 +164,10 @@ class Wxauthor(graphene.Mutation):
             )
             user_info.save()
 
-        print(token)
-        cache.set(token, value, 7200)
+        print(auth_token)
+        cache.set(auth_token, value, 7200)
 
-        return Wxauthor(result=result, token=token, message="openid保存到数据库")
+        return Wxauthor(result=result, auth_token=auth_token, message="openid保存到数据库")
 
 
 class MobileVerifyData(graphene.InputObjectType):
