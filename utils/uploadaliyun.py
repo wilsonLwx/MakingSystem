@@ -107,9 +107,8 @@ class Xfer(object):
         LOG.info(f'{"+" * 10}uploading {"+" * 10}')
         self.bucket.put_object_from_file(name, image_path)
 
-
     def sign_url(self, name):
-        url = self.bucket.sign_url('GET', name, 60 * 30)
+        url = self.bucket.sign_url('GET', name, 60 * 30).replace('http://', 'https://')
         return url
 
 
@@ -156,5 +155,5 @@ class UploadImageAdmin(admin.ModelAdmin):
 if __name__ == '__main__':
     x = Xfer()
     x.initAliyun()
-    url = x.sign_url("testPDF/123456.pdf")
+    url = x.sign_url("image/1.jpg")
     print(url)
