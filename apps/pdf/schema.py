@@ -14,7 +14,6 @@ class ReportInfo(graphene.ObjectType):
 
 
 class ReportType(graphene.ObjectType):
-    image = graphene.String()
     group = graphene.List(ReportInfo)
 
 
@@ -31,7 +30,6 @@ class Query(graphene.ObjectType):
         user_obj = UsersModel.objects.filter(openid=open_id)
         group = []
         if user_obj.exists():
-            image = user_obj.values('image').first().get('image')
             ret = PDFModel.objects.filter(user__in=user_obj).values('aliosspath', 'name', )
             r = ReportInfo()
             x = Xfer()
@@ -57,6 +55,6 @@ class Query(graphene.ObjectType):
                 group = paginator.page(paginator.num_pages)
 
             x.clearAliyun()
-            return ReportType(group=group, image=image)
+            return ReportType(group=group)
         else:
             raise GraphQLError("User is not exist")
