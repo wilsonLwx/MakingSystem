@@ -79,13 +79,13 @@ class Xfer(object):
                 userInfo.username = mobileNum
                 userInfo.save()
             test_obj = TestDetails.objects.filter(title=title_name).first()
+            banner_obj = Banner.objects.filter(title=title_name).first()
             print(title_name, test_obj)
 
             if test_obj:
                 test_obj.test_number += 1
                 test_obj.save()
-            else:
-                banner_obj = Banner.objects.filter(title=title_name).first()
+            elif banner_obj:
                 banner_obj.test_number += 1
                 banner_obj.save()
 
