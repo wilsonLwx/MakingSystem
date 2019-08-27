@@ -5,7 +5,7 @@ import graphene
 from graphene_django.types import DjangoObjectType
 from utils.uploadaliyun import Xfer
 from .models import TestDetails as TestDetailsModel
-from .models import TestName as TestNameModel
+# from .models import TestName as TestNameModel
 from .models import Banner as BannerModel
 from .models import TestIn as TestInModel
 from .models import SlideShow as SlideshowModel
@@ -54,9 +54,9 @@ class SlideShowType(graphene.ObjectType):
 class Query(graphene.ObjectType):
     leader_test = graphene.Field(TestDetailType)
     courses = graphene.Field(LeaderTestType)
-    indexbanners = graphene.Field(LeaderTestType)
     test_in = graphene.Field(TestInType, title=graphene.String(required=True))
     slideshow = graphene.Field(SlideShowType)
+    about_us = graphene.Field(AboutUsType)
 
     def resolve_slideshow(self, info):
         """首页轮播图"""
