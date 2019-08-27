@@ -9,6 +9,7 @@ from .models import TestName as TestNameModel
 from .models import Banner as BannerModel
 from .models import TestIn as TestInModel
 from .models import SlideShow as SlideshowModel
+from .models import AboutUs as AboutUsModel
 from datetime import datetime
 
 
@@ -20,6 +21,11 @@ class TestInType(DjangoObjectType):
 class SlideShowInfo(graphene.ObjectType):
     title = graphene.String()
     image = graphene.String()
+
+
+class AboutUsType(DjangoObjectType):
+    class Meta:
+        model = AboutUsModel
 
 
 class LeaderTestInfo(graphene.ObjectType):
@@ -117,3 +123,6 @@ class Query(graphene.ObjectType):
     def resolve_test_in(self, info):
 
         return TestInModel.objects.all().first()
+
+    def resolve_about_us(self, info):
+        return AboutUsModel.objects.all().first()

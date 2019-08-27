@@ -1,6 +1,6 @@
 from django.db import models
 from datetime import datetime
-from DjangoUeditor.models import UEditorField
+#from DjangoUeditor.models import UEditorField
 
 
 # Create your models here.
@@ -67,10 +67,22 @@ class TestDetails(models.Model):
 class TestIn(models.Model):
     """测试说明页"""
     title = models.CharField('标题', max_length=100)
-    introduce = UEditorField('介绍', width=600, height=300, )
-    theory = UEditorField('理论', width=600, height=300, )
-    notice = UEditorField('须知', width=600, height=300, )
+   # introduce = UEditorField('介绍', width=600, height=300, )
+   # theory = UEditorField('理论', width=600, height=300, )
+   # notice = UEditorField('须知', width=600, height=300, )
+    introduce = models.CharField('介绍', max_length=500)
+    theory = models.CharField('理论', max_length=500)
+    notice = models.CharField('须知', max_length=500)
 
     class Meta:
         verbose_name = '测试说明'
         verbose_name_plural = '测试说明'
+
+
+class AboutUs(models.Model):
+    """关于我们"""
+   # about_us = UEditorField('关于我们', width=600, height=300, )
+    about_us = models.CharField('关于我们', max_length=500)
+    class Meta:
+        verbose_name = '关于我们'
+        verbose_name_plural = '关于我们'
