@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Banner, TestDetails, TestIn, TestName, AboutUs
+from .models import Banner, TestDetails, TestIn, TestName, AboutUs, SlideShow
 from utils.uploadaliyun import UploadImageAdmin
 
 
@@ -18,12 +18,17 @@ class TestDetailsAdmin(UploadImageAdmin):
 
 class TestNameAdmin(admin.ModelAdmin):
     """测试分类名"""
-    list_display = ['name', 'parent', 'is_index_show']
+    list_display = ['name', 'parent']
 
 
 class TestInAdmin(admin.ModelAdmin):
     """分类页测试介绍"""
     list_display = ['introduce', 'theory', 'notice']
+
+
+class SlideshowAdmin(admin.ModelAdmin):
+    """轮播图"""
+    list_display = ['title', 'image']
 
 
 class AboutUsAdmin(admin.ModelAdmin):
@@ -35,6 +40,7 @@ admin.site.register(Banner, BannerAdmin)
 admin.site.register(TestDetails, TestDetailsAdmin)
 admin.site.register(TestName, TestNameAdmin)
 admin.site.register(TestIn, TestInAdmin)
+admin.site.register(SlideShow, SlideshowAdmin)
 admin.site.register(AboutUs, AboutUsAdmin)
 
 admin.site.site_header = '管理后台'
