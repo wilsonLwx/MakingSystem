@@ -20,4 +20,4 @@ class VdeiouploadAdmin(UploadVdeioAdmin):
 
 
 admin.site.register(PDFupload, PDFuploadAdmin)
-admin.site.register(Videoupload, VdeiouploadAdmin)
+# admin.site.register(Videoupload, VdeiouploadAdmin)
