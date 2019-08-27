@@ -8,8 +8,8 @@ from datetime import datetime
 
 class SlideShow(models.Model):
     """轮播图"""
-    title = models.Model('标题', max_length=100)
-    image = models.Model('轮播图', upload_to='image/', max_length=100)
+    title = models.CharField('标题', max_length=100)
+    image = models.ImageField('轮播图', upload_to='image/', max_length=100)
     push_time = models.DateTimeField('推送时间', default=datetime.now)
 
     class Meta:

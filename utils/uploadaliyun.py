@@ -107,6 +107,9 @@ class Xfer(object):
         LOG.info(f'{"+" * 10}uploading {"+" * 10}')
         self.bucket.put_object_from_file(name, image_path)
 
+    def videoupload(self, name, video_path):
+        LOG.info()
+
     def sign_url(self, name):
         url = self.bucket.sign_url('GET', name, 60 * 30).replace('http://', 'https://')
         return url

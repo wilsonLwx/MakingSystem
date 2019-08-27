@@ -18,7 +18,7 @@ class TestDetailsAdmin(UploadImageAdmin):
 
 class TestNameAdmin(admin.ModelAdmin):
     """测试分类名"""
-    list_display = ['name', 'parent', 'is_index_show']
+    list_display = ['name', 'parent']
 
 
 class TestInAdmin(admin.ModelAdmin):
@@ -40,7 +40,7 @@ admin.site.register(Banner, BannerAdmin)
 admin.site.register(TestDetails, TestDetailsAdmin)
 admin.site.register(TestName, TestNameAdmin)
 admin.site.register(TestIn, TestInAdmin)
-admin.site.registe(SlideShow, SlideshowAdmin)
+admin.site.register(SlideShow, SlideshowAdmin)
 admin.site.register(AboutUs, AboutUsAdmin)
 
 admin.site.site_header = '管理后台'
