@@ -1,6 +1,6 @@
 from django.db import models
 from datetime import datetime
-from DjangoUeditor.models import UEditorField
+# from DjangoUeditor.models import UEditorField
 from makingsystem.settings import base
 
 
@@ -21,14 +21,25 @@ class PDF(models.Model):
 
 class PDFupload(models.Model):
     """PDF 上传"""
-    file = models.FileField(upload_to=base.FILE_URL, verbose_name="文件选择")
+    file = models.FileField(upload_to=base.PDF_FILE_URL, verbose_name="文件选择")
     name = models.CharField(max_length=200, blank=True, verbose_name="文件名称")
 
     class Meta:
         # unique_together = ('file', 'name')
         db_table = 'test_file'
-        verbose_name = "文件"
+        verbose_name = "PDF上传文件"
         verbose_name_plural = verbose_name
 
     def __str__(self):
         return self.name
+
+
+class Videoupload(models.Model):
+    """video 上传"""
+    file = models.FileField(upload_to=base.VDIEO_FILE_URL, verbose_name="文件选择")
+    name = models.CharField(max_length=200, blank=True, verbose_name="文件名称")
+
+    class Meta:
+        db_table = 'vdieo_file'
+        verbose_name = 'VDIEO上传文件'
+        verbose_name_plural = verbose_name

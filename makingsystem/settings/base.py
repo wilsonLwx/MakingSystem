@@ -186,8 +186,13 @@ STATIC_ROOT = '/root/static/'
 #STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 # FILE_URL = 'pdf/%Y%m/'
 
-FILE_URL = 'PDF/'
+PDF_FILE_URL = 'PDF/'
 
-FILE_ROOT = os.path.join(BASE_DIR, FILE_URL)
+PDF_FILE_ROOT = os.path.join(BASE_DIR, PDF_FILE_URL)
+
+VDIEO_FILE_URL = 'VIDEO/'
+
+VDIEO_FILE_ROOT = os.path.join(BASE_DIR, VDIEO_FILE_URL)
+
 
 STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL)

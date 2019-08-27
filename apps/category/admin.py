@@ -23,7 +23,7 @@ class TestNameAdmin(admin.ModelAdmin):
 
 class TestInAdmin(admin.ModelAdmin):
     """分类页测试介绍"""
-    list_display = ['introduce', 'theory', 'notice']
+    list_display = ['title', 'introduce', 'theory', 'notice']
 
 
 class SlideshowAdmin(admin.ModelAdmin):

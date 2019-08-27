@@ -108,7 +108,8 @@ class Xfer(object):
         self.bucket.put_object_from_file(name, image_path)
 
     def videoupload(self, name, video_path):
-        LOG.info()
+        LOG.info("上传video")
+        self.bucket.put_object_from_file(name, video_path)
 
     def sign_url(self, name):
         url = self.bucket.sign_url('GET', name, 60 * 30).replace('http://', 'https://')
@@ -155,8 +156,26 @@ class UploadImageAdmin(admin.ModelAdmin):
         xfer.clearAliyun()
 
 
+class UploadVdeioAdmin(admin.ModelAdmin):
+    """
+    上传Vedio到
+    """
+    def save_model(self, request, obj, form, change):
+        obj.save()
+        vedio_path = os.path.join(MEDIA_ROOT, obj.file.name)
+        xfer = Xfer()
+        xfer.initAliyun()
+        xfer.videoupload(obj.file.name, vedio_path)
+        xfer.clearAliyun()
+        try:
+            os.remove(vedio_path)
+        except:
+            pass
+
+
 if __name__ == '__main__':
     x = Xfer()
     x.initAliyun()
-    url = x.sign_url("image/1.jpg")
+    # url = x.sign_url("VIDEO/微信_2019-08-27_21-03-36_CeLuCuX.mp4")
+    url = x.sign_url("VIDEO/微信_2019-08-27_21-03-36_CeLuCuX.mp4")
     print(url)
