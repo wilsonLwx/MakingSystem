@@ -26,7 +26,7 @@ class TestInAdmin(admin.ModelAdmin):
     list_display = ['title', 'introduce', 'theory', 'notice']
 
 
-class SlideshowAdmin(admin.ModelAdmin):
+class SlideshowAdmin(UploadImageAdmin):
     """轮播图"""
     list_display = ['title', 'image']
 
