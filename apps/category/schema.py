@@ -55,13 +55,13 @@ class Query(graphene.ObjectType):
     leader_test = graphene.Field(TestDetailType)
     courses = graphene.Field(LeaderTestType)
     indexbanners = graphene.Field(LeaderTestType)
-    test_in = graphene.Field(TestInType)
+    test_in = graphene.Field(TestInType, title=graphene.String(required=True))
     slideshow = graphene.Field(SlideShowType)
 
     def resolve_slideshow(self, info):
         """首页轮播图"""
         slideshow_obj = SlideshowModel.objects.all()
-        slideshow_info = slideshow_obj. values_list('title', 'image')
+        slideshow_info = slideshow_obj.values_list('title', 'image')
         group = []
         x = Xfer()
         x.initAliyun()
@@ -120,9 +120,8 @@ class Query(graphene.ObjectType):
     #         group.append(LeaderTestInfo(title=title, url=url, image=image))
     #     return LeaderTestType(group=group)
 
-    def resolve_test_in(self, info):
-
-        return TestInModel.objects.all().first()
+    def resolve_test_in(self, info, title):
+        return TestInModel.objects.filter(title=title).first()
 
     def resolve_about_us(self, info):
         return AboutUsModel.objects.all().first()
