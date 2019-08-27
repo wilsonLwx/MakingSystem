@@ -65,3 +65,12 @@ class TestIn(models.Model):
     class Meta:
         verbose_name = '测试说明'
         verbose_name_plural = '测试说明'
+
+
+class AboutUs(models.Model):
+    """关于我们"""
+    about_us = UEditorField('关于我们', width=600, height=300, )
+
+    class Meta:
+        verbose_name = '关于我们'
+        verbose_name_plural = '关于我们'

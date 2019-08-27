@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Banner, TestDetails, TestIn, TestName
+from .models import Banner, TestDetails, TestIn, TestName, AboutUs
 from utils.uploadaliyun import UploadImageAdmin
 
 
@@ -26,10 +26,16 @@ class TestInAdmin(admin.ModelAdmin):
     list_display = ['introduce', 'theory', 'notice']
 
 
+class AboutUsAdmin(admin.ModelAdmin):
+    """关于我们"""
+    list_display = ['about_us']
+
+
 admin.site.register(Banner, BannerAdmin)
 admin.site.register(TestDetails, TestDetailsAdmin)
 admin.site.register(TestName, TestNameAdmin)
 admin.site.register(TestIn, TestInAdmin)
+admin.site.register(AboutUs, AboutUsAdmin)
 
 admin.site.site_header = '管理后台'
 admin.site.site_title = '大学生领导力潜质研究院'

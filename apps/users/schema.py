@@ -36,6 +36,7 @@ class Wxauthor(graphene.Mutation):
     """
     微信认证
     """
+
     class Arguments:
         wxauthordata = WxauthorData(required=True)
 
@@ -62,6 +63,7 @@ class Wxauthor(graphene.Mutation):
                 'session_key': session_key
             }
             return value
+
         # 使用uuid 产生token
         auth_token = uuid.uuid1()
         # 访问微信服务器获取openid
@@ -73,7 +75,7 @@ class Wxauthor(graphene.Mutation):
         if not openid:
             message = "openid为空"
             result = False
-            return Wxauthor(result=result, auth_token=None,  message=message)
+            return Wxauthor(result=result, auth_token=None, message=message)
 
         LOG.info(auth_token)
         message = "openid 获取成功"
@@ -81,7 +83,7 @@ class Wxauthor(graphene.Mutation):
         # auth_token 存入redis 缓存
         cache.set(auth_token, value, 60 * 60 * 5)
 
-        return Wxauthor(result=True, auth_token=auth_token,  message=message)
+        return Wxauthor(result=True, auth_token=auth_token, message=message)
 
 
 class MobileVerifyData(graphene.InputObjectType):
@@ -92,6 +94,7 @@ class MobileVerify(graphene.Mutation):
     """
     发送手机验证码
     """
+
     class Arguments:
         mobileverifydata = MobileVerifyData(required=True)
 
@@ -135,6 +138,7 @@ class Register(graphene.Mutation):
     """
     验证手机号
     """
+
     class Arguments:
         registerData = RegisterData(required=True)
 
@@ -176,7 +180,6 @@ class Register(graphene.Mutation):
             userInfo.save()
             return MobileVerify(result=True, message="用户信息已存在")
 
-
         try:
             UserModel.objects.create(
                 username=mobile,
@@ -201,6 +204,7 @@ class SearchMobile(graphene.Mutation):
     """
     手机号是否验证
     """
+
     class Arguments:
         searchmobiledata = SearchMobileData(required=True)
 

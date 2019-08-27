@@ -8,12 +8,18 @@ from .models import TestDetails as TestDetailsModel
 from .models import TestName as TestNameModel
 from .models import Banner as BannerModel
 from .models import TestIn as TestInModel
+from .models import AboutUs as AboutUsModel
 from datetime import datetime
 
 
 class TestInType(DjangoObjectType):
     class Meta:
         model = TestInModel
+
+
+class AboutUsType(DjangoObjectType):
+    class Meta:
+        model = AboutUsModel
 
 
 class LeaderTestInfo(graphene.ObjectType):
@@ -40,6 +46,7 @@ class Query(graphene.ObjectType):
     courses = graphene.Field(LeaderTestType)
     indexbanners = graphene.Field(LeaderTestType)
     test_in = graphene.Field(TestInType)
+    about_us = graphene.Field(AboutUsType)
 
     def resolve_leader_test(self, info):
         leader_test_obj = TestDetailsModel.objects.filter(is_index_show=True, push_time__lt=datetime.now())
@@ -91,3 +98,6 @@ class Query(graphene.ObjectType):
 
     def resolve_test_in(self, info):
         return TestInModel.objects.all().first()
+
+    def resolve_about_us(self, info):
+        return AboutUsModel.objects.all().first()

@@ -189,3 +189,5 @@ STATIC_ROOT = '/root/static/'
 FILE_URL = 'PDF/'
 
 FILE_ROOT = os.path.join(BASE_DIR, FILE_URL)
+
+STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL)
