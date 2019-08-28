@@ -15,10 +15,20 @@ bucketName ='hwihome' # 存储空间名
 云通讯配置
 https://www.yuntongxun.com/member/main
 """
-accountSid = '8a216da862467c3a0162715bd6361388'
+#accountSid = '8a216da862467c3a0162715bd6361388'
 
 #主帐号Token
-accountToken = 'a16822a148f745fdb96d92e89b3a5cfe'
+#accountToken = 'a16822a148f745fdb96d92e89b3a5cfe'
 
 #应用Id
-appId = '8a216da862467c3a0162715bd698138f'
+#appId = '8a216da862467c3a0162715bd698138f'
+
+"""
+腾讯云 短信
+"""
+
+appid = "1400249731"
+
+appkey = "f178ce986d1e69434ddc3a7d1dedd8ff"
+
+signid = "231564"

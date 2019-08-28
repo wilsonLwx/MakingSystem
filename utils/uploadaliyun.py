@@ -7,7 +7,8 @@ import zipfile
 from category.models import TestDetails, Banner
 from pdf.models import PDF
 from users.models import Users
-from makingsystem.settings import config, MEDIA_ROOT
+from makingsystem.settings import MEDIA_ROOT
+from makingsystem.settings.config import AccessKeyId, AccessKeySecret, Endpoint, bucketName
 # 用户登录名称 object-oss@1463266644828335.onaliyun.com
 # AccessKey ID LTAIeFNriSXX6ySq
 # AccessKeySecret QHdxPWx7JU9q6Y55D3feQxlwcfZb66
@@ -38,10 +39,10 @@ class Xfer(object):
 
         self.auth = None
         self.bucket = None
-        self.AccessKeyId = config.AccessKeyId
-        self.ACCessKeySecret = config.AccessKeySecret
-        self.Endpoint = config.Endpoint
-        self.bucketName = config.bucketName
+        self.AccessKeyId = AccessKeyId
+        self.ACCessKeySecret = AccessKeySecret
+        self.Endpoint = Endpoint
+        self.bucketName = bucketName
 
     def initAliyun(self):
         if self.auth is None:
@@ -60,9 +61,10 @@ class Xfer(object):
         for fileN in zfile.namelist():
             if fileN.endswith('/'):
                 continue
-            # name = fileN.encode('cp437').decode('gbk')
-
-            name = fileN
+            try:
+                name = fileN.encode('cp437').decode('gbk')
+            except:
+                name = fileN
             mobile = re.compile('1[345678]\d{9}')
             mobileNum = mobile.search(name).group()
             PDFname = name.split('/')[-1]

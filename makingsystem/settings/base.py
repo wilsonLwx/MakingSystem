@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'users',
     'category',
     'pdf',
-    'DjangoUeditor',
+    'ckeditor',
 ]
 
 AUTH_USER_MODEL = "users.Users"
