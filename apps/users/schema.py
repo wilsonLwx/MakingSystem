@@ -4,7 +4,6 @@ import random
 import re
 import uuid
 from graphql import GraphQLError
-from utils.yuntongxun.SendTemplateSMS import CCP
 from .models import Users as UserModel
 from graphene_django import DjangoObjectType
 import graphene
@@ -13,19 +12,12 @@ from django import db
 import requests
 import logging
 
+from makingsystem.settings.config import appid, appkey, sms_sjgn, template_id, miniappid, miniappsecret
+
+from qcloudsms_py import SmsSingleSender
+from qcloudsms_py.httpclient import HTTPError
+
 LOG = logging.getLogger(__file__)
-
-
-class UserType(DjangoObjectType):
-    class Meta:
-        model = UserModel
-
-
-class Query(graphene.ObjectType):
-    pass
-
-
-###################################################
 
 
 class WxauthorData(graphene.InputObjectType):
@@ -49,8 +41,8 @@ class Wxauthor(graphene.Mutation):
         js_code = wxauthordata.get('jsCode')
 
         def returnOpenid(js_code):
-            appid = 'wx900ef66b9970c484'
-            appsecret = '8ca28ffc3096a88b9f96d5f98cc272de'
+            appid = miniappid
+            appsecret = miniappsecret
             url = f"https://api.weixin.qq.com/sns/jscode2session?appid={appid}&secret={appsecret}&js_code={js_code}"
             r = requests.get(url, verify=True)
             if r.status_code != requests.codes.ok:
@@ -111,16 +103,21 @@ class MobileVerify(graphene.Mutation):
 
         if cache.get(phone_num):
             LOG.debug(cache.get(phone_num))
-            return MobileVerify(result=True, message="验证码未过期")
-        # 发送验证码
+            return MobileVerify(result=True, message=f"验证码未过期{cache.get(phone_num)}")
+        # 腾讯云短信发送
+        ssender = SmsSingleSender(appid, appkey)
+        params = [smsCode, 2]  # 当模板没有参数时，`params = []`
         try:
-            ccp = CCP()
-            result = ccp.sendTemplateSMS(phone_num, [smsCode, '5'], 1)
+            result = ssender.send_with_param(86, phone_num,
+                                             template_id, params, sign=sms_sjgn, extend="", ext="")
+        except HTTPError as e:
+            LOG.info(e)
+            return MobileVerify(result=False, message=e)
         except Exception as e:
             LOG.error(e)
-            return MobileVerify(result=False, message="发送短信异常")
+            return MobileVerify(result=False, message=e)
         # 判断发送
-        if result == 0:
+        if result.get('errmsg') == 'OK':
             cache.set(phone_num, smsCode, 60 * 2)
             return MobileVerify(result=True, message="发送短信成功")
         else:

@@ -67,8 +67,8 @@ class TestIn(models.Model):
     """测试说明页"""
     title = models.CharField('标题', max_length=100)
     introduce = RichTextField('介绍')
-    theory = RichTextField('理论')
-    notice = RichTextField('须知')
+    theory = RichTextField('理论', default="None")
+    notice = RichTextField('须知', default="None")
     # introduce = models.CharField('介绍', max_length=500)
     # theory = models.CharField('理论', max_length=500)
     # notice = models.CharField('须知', max_length=500)

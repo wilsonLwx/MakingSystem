@@ -22,5 +22,5 @@ sqlparse==0.3.0
 urllib3==1.21.1
 oss2==2.8.0
 django-redis==4.10.0
-# http://yshblog.com/blog/193
 django-ckeditor==5.7.1
+qcloudsms-py==0.1.3

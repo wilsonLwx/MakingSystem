@@ -5,30 +5,36 @@ https://oss.console.aliyun.com/overview
 创建用户 赋予AMS OSS访问权限
 https://help.aliyun.com/document_detail/31837.html?spm=a2c4g.11186623.2.12.3e936c40MumyJx#concept-zt4-cvy-5db
 """
-AccessKeyId = 'LTAIeFNriSXX6ySq' # 新建用户时可以查看
-AccessKeySecret = 'QHdxPWx7JU9q6Y55D3feQxlwcfZb66' # 新建用户时可以查看
-Endpoint = 'oss-cn-beijing.aliyuncs.com' # 节点名 例如 oss-cn-beijing.aliyuncs.com
-bucketName ='hwihome' # 存储空间名
-# bucketName1 = None
+
+AccessKeyId = 'LTAI5wtrKrrWNZyV' # 新建用户时可以查看
+AccessKeySecret = 'h2p8XTFJYSZx3FDYx53auPDnMquI8R' # 新建用户时可以查看
+Endpoint = 'oss-cn-beijing.aliyuncs.com'# 节点名 例如 oss-cn-beijing.aliyuncs.com
+bucketName = 'liderar'# 存储空间名
 
 """
-云通讯配置
-https://www.yuntongxun.com/member/main
+
+用户登录名称 liderar@1331305356221389.onaliyun.com
+AccessKey ID LTAI5wtrKrrWNZyV
+AccessKeySecret h2p8XTFJYSZx3FDYx53auPDnMquI8R
+
 """
-#accountSid = '8a216da862467c3a0162715bd6361388'
 
-#主帐号Token
-#accountToken = 'a16822a148f745fdb96d92e89b3a5cfe'
-
-#应用Id
-#appId = '8a216da862467c3a0162715bd698138f'
 
 """
 腾讯云 短信
 """
 
-appid = "1400249731"
+appid = "1400249140"
 
-appkey = "f178ce986d1e69434ddc3a7d1dedd8ff"
+appkey = "e09a8b5bff2caa2182a3b82be8db6a8f"
 
-signid = "231564"
+sms_sjgn = "领途教育"
+
+template_id = 406313
+
+
+"""
+小程序id
+"""
+miniappid = 'wx900ef66b9970c484'
+miniappsecret = '8ca28ffc3096a88b9f96d5f98cc272de'

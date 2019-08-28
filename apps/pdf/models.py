@@ -32,14 +32,3 @@ class PDFupload(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class Videoupload(models.Model):
-    """video 上传"""
-    file = models.FileField(upload_to=base.VDIEO_FILE_URL, verbose_name="文件选择")
-    name = models.CharField(max_length=200, blank=True, verbose_name="文件名称")
-
-    class Meta:
-        db_table = 'vdieo_file'
-        verbose_name = 'VDIEO上传文件'
-        verbose_name_plural = verbose_name

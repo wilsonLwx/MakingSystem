@@ -11,8 +11,7 @@ import category.schema
 import pdf.schema
 
 
-class Query(users.schema.Query,
-            category.schema.Query,
+class Query(category.schema.Query,
             pdf.schema.Query,
             graphene.ObjectType):
     debug = graphene.Field(DjangoDebug, name='_debug')

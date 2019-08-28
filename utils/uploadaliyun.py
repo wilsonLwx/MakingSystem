@@ -9,10 +9,6 @@ from pdf.models import PDF
 from users.models import Users
 from makingsystem.settings import MEDIA_ROOT
 from makingsystem.settings.config import AccessKeyId, AccessKeySecret, Endpoint, bucketName
-# 用户登录名称 object-oss@1463266644828335.onaliyun.com
-# AccessKey ID LTAIeFNriSXX6ySq
-# AccessKeySecret QHdxPWx7JU9q6Y55D3feQxlwcfZb66
-from django.db import connection
 import logging
 from utils.log import log
 
@@ -91,7 +87,6 @@ class Xfer(object):
                 banner_obj.test_number += 1
                 banner_obj.save()
 
-
             PDFInfo = PDF()
             PDFInfo.name = PDFname
             PDFInfo.aliosspath = name
@@ -108,10 +103,6 @@ class Xfer(object):
     def imageupload(self, name, image_path):
         LOG.info(f'{"+" * 10}uploading {"+" * 10}')
         self.bucket.put_object_from_file(name, image_path)
-
-    def videoupload(self, name, video_path):
-        LOG.info("上传video")
-        self.bucket.put_object_from_file(name, video_path)
 
     def sign_url(self, name):
         url = self.bucket.sign_url('GET', name, 60 * 30).replace('http://', 'https://')
@@ -132,11 +123,6 @@ class uploadzipadmin(admin.ModelAdmin):
         xfer.upload(zip_path)
         xfer.clearAliyun()
 
-        # print("@"*40)
-        # print(obj.__dir__())
-        # print("#"*50)
-        # print(request.__dir__())
-        # print(obj.name())
         try:
             os.remove(zip_path)
         except:
@@ -157,20 +143,8 @@ class UploadImageAdmin(admin.ModelAdmin):
         xfer.imageupload(obj.image.name, image_path)
         xfer.clearAliyun()
 
-
-class UploadVdeioAdmin(admin.ModelAdmin):
-    """
-    上传Vedio到
-    """
-    def save_model(self, request, obj, form, change):
-        obj.save()
-        vedio_path = os.path.join(MEDIA_ROOT, obj.file.name)
-        xfer = Xfer()
-        xfer.initAliyun()
-        xfer.videoupload(obj.file.name, vedio_path)
-        xfer.clearAliyun()
         try:
-            os.remove(vedio_path)
+            os.remove(image_path)
         except:
             pass
 
