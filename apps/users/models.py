@@ -3,8 +3,8 @@ from datetime import datetime
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-
 # Create your models here.
+from DjangoUeditor.forms import UEditorField
 
 
 class Users(AbstractUser):
@@ -19,6 +19,7 @@ class Users(AbstractUser):
     # email = models.EmailField("邮箱", max_length=20, blank=True, null=True)
     # school = models.CharField("学校", max_length=20, null=True)
     name = models.CharField("昵称", max_length=10, null=True)
+
     # profession = models.CharField("专业", max_length=20, null=True)
     # number = models.IntegerField("编号", null=True)
     # date_birth = models.DateField("生日", auto_now_add=True)
@@ -45,3 +46,6 @@ class CollectInfo(models.Model):
     class Meta:
         verbose_name = '数据统计'
         verbose_name_plural = verbose_name
+
+
+
