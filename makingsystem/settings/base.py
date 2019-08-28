@@ -11,9 +11,14 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from datetime import timedelta
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, BASE_DIR)
+sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -35,14 +40,34 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
     'graphene_django',
+    'users',
+    'category',
+    'pdf',
+    'ckeditor',
 ]
+
+AUTH_USER_MODEL = "users.Users"
 
 GRAPHENE = {
     'SCHEMA': 'makingsystem.schema.schema',
     'MIDDLEWARE': [
         'graphene_django.debug.DjangoDebugMiddleware',
+        'graphql_jwt.middleware.JSONWebTokenMiddleware',
     ]
+}
+
+AUTHENTICATION_BACKENDS = [
+    'graphql_jwt.backends.JSONWebTokenBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+GRAPHQL_JWT = {
+    'JWT_ALLOW_ARGUMENT': True,
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_EXPIRATION_DELTA': timedelta(minutes=5),
+    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
 }
 
 MIDDLEWARE = [
@@ -60,7 +85,7 @@ ROOT_URLCONF = 'makingsystem.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, '../../templates')]
+        'DIRS': [os.path.join(BASE_DIR, 'templates')]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -69,6 +94,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # 添加图片处理器，为了在课程列表中前面加上MEDIA_URL
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -98,12 +125,47 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": "redis://127.0.0.1:6379/1",
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#             "PASSWORD": "123456"
+#         }
+#     }
+# }
+
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+#         'LOCATION': 'unique-snowflake',
+#     }
+# }
 
-TIME_ZONE = 'UTC'
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {"max_connections": 100}
+            # "PASSWORD": "密码",
+        }
+    }
+}
+
+REDIS_TIMEOUT=7*24*60*60
+CUBES_REDIS_TIMEOUT=60*60
+NEVER_REDIS_TIMEOUT=365*24*60*60
+
+
+LANGUAGE_CODE = 'zh-hans'
+
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -115,3 +177,22 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # 指定根目录
+
+STATIC_ROOT = '/root/static/'
+#ALLOWED_HOSTS=['dsx.mq1314.cn']
+#STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+# FILE_URL = 'pdf/%Y%m/'
+
+PDF_FILE_URL = 'PDF/'
+
+PDF_FILE_ROOT = os.path.join(BASE_DIR, PDF_FILE_URL)
+
+VDIEO_FILE_URL = 'VIDEO/'
+
+VDIEO_FILE_ROOT = os.path.join(BASE_DIR, VDIEO_FILE_URL)
+
+
+STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL)
