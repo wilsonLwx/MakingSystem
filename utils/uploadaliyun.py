@@ -4,9 +4,10 @@ import re
 import oss2
 import zipfile
 
+from category.models import TestDetails, Banner
 from pdf.models import PDF
 from users.models import Users
-from makingsystem.settings import config
+from makingsystem.settings import config, MEDIA_ROOT
 # 用户登录名称 object-oss@1463266644828335.onaliyun.com
 # AccessKey ID LTAIeFNriSXX6ySq
 # AccessKeySecret QHdxPWx7JU9q6Y55D3feQxlwcfZb66
@@ -14,12 +15,11 @@ from django.db import connection
 import logging
 from utils.log import log
 
+from django.contrib import admin
+
 log.initLogConf()
 
 LOG = logging.getLogger(__file__)
-
-
-# cursor = connection.cursor()
 
 
 class Xfer(object):
@@ -61,22 +61,40 @@ class Xfer(object):
             if fileN.endswith('/'):
                 continue
             # name = fileN.encode('cp437').decode('gbk')
+
             name = fileN
-            print('###name:', name)
             mobile = re.compile('1[345678]\d{9}')
             mobileNum = mobile.search(name).group()
-            user = Users.objects.filter(mobile=mobileNum).first()
+            PDFname = name.split('/')[-1]
+            title_name = PDFname.split('+')[0]
+
+            if PDF.objects.filter(name=PDFname).first():
+                continue
+
+            userInfo = Users.objects.filter(mobile=mobileNum).first()
+            if not userInfo:
+                LOG.info("用户未保存")
+                userInfo = Users()
+                userInfo.mobile = mobileNum
+                userInfo.username = mobileNum
+                userInfo.save()
+            test_obj = TestDetails.objects.filter(title=title_name).first()
+            banner_obj = Banner.objects.filter(title=title_name).first()
+            print(title_name, test_obj)
+
+            if test_obj:
+                test_obj.test_number += 1
+                test_obj.save()
+            elif banner_obj:
+                banner_obj.test_number += 1
+                banner_obj.save()
+
+
             PDFInfo = PDF()
-            PDFInfo.name = name.split('/')[-1]
+            PDFInfo.name = PDFname
             PDFInfo.aliosspath = name
-            print('### mobileNum:', mobileNum)
-            if not user:
-                LOG.error(f"用户不存在")
-                user = Users()
-                user.mobile = mobileNum
-                user.username = mobileNum
-                user.save()
-            PDFInfo.user = user
+            LOG.info(f'### mobileNum:{mobileNum}')
+            PDFInfo.user = userInfo
             PDFInfo.save()
             data = zfile.read(fileN)
             self.bucket.put_object(name, data)
@@ -85,13 +103,57 @@ class Xfer(object):
         except OSError as e:
             pass
 
+    def imageupload(self, name, image_path):
+        LOG.info(f'{"+" * 10}uploading {"+" * 10}')
+        self.bucket.put_object_from_file(name, image_path)
+
     def sign_url(self, name):
-        url = self.bucket.sign_url('GET', name, 60 * 30)
+        url = self.bucket.sign_url('GET', name, 60 * 30).replace('http://', 'https://')
         return url
+
+
+class uploadzipadmin(admin.ModelAdmin):
+    """
+    自动上传新建对象的文件至阿里云
+    """
+
+    def save_model(self, request, obj, form, change):
+        obj.save()
+        # LOG.info('----- 开始上传 下载 至本地: %s' % obj.image)
+        zip_path = os.path.join(MEDIA_ROOT, obj.file.name)
+        xfer = Xfer()
+        xfer.initAliyun()
+        xfer.upload(zip_path)
+        xfer.clearAliyun()
+
+        # print("@"*40)
+        # print(obj.__dir__())
+        # print("#"*50)
+        # print(request.__dir__())
+        # print(obj.name())
+        try:
+            os.remove(zip_path)
+        except:
+            pass
+
+
+class UploadImageAdmin(admin.ModelAdmin):
+    """
+    自动上传新建对象的图片至阿里云
+    """
+
+    def save_model(self, request, obj, form, change):
+        obj.save()
+        LOG.info('----- 开始上传测试图片至阿里云: %s' % obj.image.name)
+        image_path = os.path.join(MEDIA_ROOT, obj.image.name)
+        xfer = Xfer()
+        xfer.initAliyun()
+        xfer.imageupload(obj.image.name, image_path)
+        xfer.clearAliyun()
 
 
 if __name__ == '__main__':
     x = Xfer()
     x.initAliyun()
-    url = x.sign_url("testPDF/123456.pdf")
+    url = x.sign_url("image/1.jpg")
     print(url)

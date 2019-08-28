@@ -13,7 +13,7 @@ class Users(AbstractUser):
     #     ('female', '女')
     # )
 
-    openid = models.CharField("用户唯一码", max_length=100, null=True)
+    openid = models.CharField("用户唯一码", max_length=100, default="onlyOne")
     mobile = models.CharField("手机号", max_length=100)
     # gender = models.CharField("性别", max_length=20, choices=gender_choices, default='male')
     # email = models.EmailField("邮箱", max_length=20, blank=True, null=True)

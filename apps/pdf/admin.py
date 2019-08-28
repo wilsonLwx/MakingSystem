@@ -1,6 +1,8 @@
 from django.contrib import admin
 from .models import PDFupload, PDF
 
+from utils.uploadaliyun import uploadzipadmin
+
 
 # Register your models here.
 class PDFAdmin(admin.ModelAdmin):
@@ -8,7 +10,7 @@ class PDFAdmin(admin.ModelAdmin):
     list_display = ['name']
 
 
-class PDFuploadAdmin(admin.ModelAdmin):
+class PDFuploadAdmin(uploadzipadmin):
     """PDF上传"""
     list_display = ['file', 'name']
 
