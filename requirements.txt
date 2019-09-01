@@ -14,7 +14,7 @@ promise==2.2.1
 PyJWT==1.7.1
 mysqlclient==1.4.2
 pytz==2019.2
-requests==2.18.1
+requests==2.20.0
 Rx==1.6.1
 singledispatch==3.4.0.3
 six==1.12.0
