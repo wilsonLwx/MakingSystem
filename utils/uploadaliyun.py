@@ -8,7 +8,12 @@ from category.models import TestDetails, Banner
 from pdf.models import PDF
 from users.models import Users
 from makingsystem.settings import MEDIA_ROOT
-from makingsystem.settings.config import AccessKeyId, AccessKeySecret, Endpoint, bucketName
+from makingsystem.settings.config import AccessKeyId, AccessKeySecret, Endpoint, bucketName, appid, appkey, view_template_id, sms_sjgn
+
+from qcloudsms_py import SmsSingleSender
+from qcloudsms_py.httpclient import HTTPError
+
+
 import logging
 from utils.log import log
 
@@ -54,6 +59,7 @@ class Xfer(object):
             return
         LOG.info(f'{"+" * 10}uploading {"+" * 10}')
         zfile = zipfile.ZipFile(localpath, 'r')
+        studict = {}
         for fileN in zfile.namelist():
             if fileN.endswith('/'):
                 continue
@@ -65,7 +71,9 @@ class Xfer(object):
             mobileNum = mobile.search(name).group()
             PDFname = name.split('/')[-1]
             title_name = PDFname.split('+')[0]
-
+            stuname = name.split('+')[-1].split('.')[0]
+            if not studict.get(mobileNum, None):
+                studict[mobileNum] = stuname
             if PDF.objects.filter(name=PDFname).first():
                 continue
 
@@ -95,6 +103,15 @@ class Xfer(object):
             PDFInfo.save()
             data = zfile.read(fileN)
             self.bucket.put_object(name, data)
+            
+        ssender = SmsSingleSender(appid, appkey)
+        for key, val in studict.items():
+            try:
+                ssender.send_with_param(86, key, view_template_id, [val,], sign=sms_sjgn, extend="", ext="")
+            except HTTPError as e:
+                LOG.error(e)
+            except Exception as e:
+                LOG.error(e)
         try:
             os.remove(localpath)
         except OSError as e:
@@ -143,10 +160,6 @@ class UploadImageAdmin(admin.ModelAdmin):
         xfer.imageupload(obj.image.name, image_path)
         xfer.clearAliyun()
 
-        try:
-            os.remove(image_path)
-        except:
-            pass
 
 
 if __name__ == '__main__':

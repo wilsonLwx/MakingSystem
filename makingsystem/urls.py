@@ -25,4 +25,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('graphql/', csrf_exempt(jwt_cookie(GraphQLView.as_view(graphiql=True)))),
     path('users/', include('users.urls')),
+    path('', admin.site.urls),
 ]

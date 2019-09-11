@@ -18,7 +18,7 @@ DATABASES = {
         'USER': 'odin_user',
         'NAME': 'django_dev',
         'HOST': '127.0.0.1',
-        'PORT': 53306,
+        'PORT': 3306,
         'PASSWORD': 'password1234',
     }
 }
