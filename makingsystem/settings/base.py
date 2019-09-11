@@ -27,7 +27,7 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 SECRET_KEY = 'v&mvj@0h=t82f4)q8u)=$m(1m^)zv3jl46$o2ap+!wz6s0jz$2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -194,5 +194,3 @@ VDIEO_FILE_URL = 'VIDEO/'
 
 VDIEO_FILE_ROOT = os.path.join(BASE_DIR, VDIEO_FILE_URL)
 
-
-STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL)

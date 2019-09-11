@@ -31,10 +31,10 @@ class Query(graphene.ObjectType):
         group = []
         if user_obj.exists():
             ret = PDFModel.objects.filter(user__in=user_obj).values('aliosspath', 'name', )
-            r = ReportInfo()
             x = Xfer()
             x.initAliyun()
             for i in ret:
+                r = ReportInfo()
                 path = i.get('aliosspath')
                 pdf_name = i.get('name')
                 url = x.sign_url(path)

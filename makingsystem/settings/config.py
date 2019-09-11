@@ -32,6 +32,7 @@ sms_sjgn = "领途教育"
 
 template_id = 406313
 
+view_template_id = 412471
 
 """
 小程序id

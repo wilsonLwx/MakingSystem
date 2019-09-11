@@ -99,7 +99,8 @@ class MobileVerify(graphene.Mutation):
         if not re.match(r'1[345678]\d{9}', phone_num):
             return MobileVerify(result=False, message="手机号码不是11位")
         # 生成验证码
-        smsCode = '%06d' % random.randint(0, 999999)
+        #smsCode = '%06d' % random.randint(0, 999999)
+        smsCode = '%04d' % random.randint(0, 9999)
 
         if cache.get(phone_num):
             LOG.debug(cache.get(phone_num))
