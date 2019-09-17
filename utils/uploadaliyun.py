@@ -61,28 +61,42 @@ class Xfer(object):
         zfile = zipfile.ZipFile(localpath, 'r')
         studict = {}
         for fileN in zfile.namelist():
-            if fileN.endswith('/'):
+            if any([fileN.endswith('/'), not fileN.endswith("pdf"), fileN.startswith('__')]):
                 continue
             try:
                 name = fileN.encode('cp437').decode('gbk')
             except:
-                name = fileN
-            mobile = re.compile('1[345678]\d{9}')
-            mobileNum = mobile.search(name).group()
-            PDFname = name.split('/')[-1]
-            title_name = PDFname.split('+')[0]
-            stuname = name.split('+')[-1].split('.')[0]
-            if not studict.get(mobileNum, None):
-                studict[mobileNum] = stuname
+                try:
+                    name = fileN.encode('cp437').decode('utf8')
+                except:
+                    name = fileN
+            try:
+                namecom = re.compile(r'(?P<report_name>\w+)/(?P<title_name>.+?)\+(?P<mobile>\d{11})\+(\d+)\+(?P<stuname>\w+)\.pdf')
+                namegroup = namecom.match(name)
+                mobile = namegroup.group("mobile")
+                title_name = namegroup.group("title_name")
+                stuname = namegroup.group("stuname")
+                PDFname = name.split('/')[-1]
+                report_name = namegroup.group("report_name")
+            except Exception as e:
+                LOG.info(f"fial{name}")
+                continue
+
+            # mobile = re.compile('1[345678]\d{9}')
+            # mobileNum = mobile.search(name).group()
+            # title_name = PDFname.split('+')[0]
+            # stuname = name.split('+')[-1].split('.')[0]
+            if not studict.get(mobile, None):
+                studict[mobile] = stuname
             if PDF.objects.filter(name=PDFname).first():
                 continue
 
-            userInfo = Users.objects.filter(mobile=mobileNum).first()
+            userInfo = Users.objects.filter(mobile=mobile).first()
             if not userInfo:
                 LOG.info("用户未保存")
                 userInfo = Users()
-                userInfo.mobile = mobileNum
-                userInfo.username = mobileNum
+                userInfo.mobile = mobile
+                userInfo.username = mobile
                 userInfo.save()
             test_obj = TestDetails.objects.filter(title=title_name).first()
             banner_obj = Banner.objects.filter(title=title_name).first()
@@ -98,12 +112,12 @@ class Xfer(object):
             PDFInfo = PDF()
             PDFInfo.name = PDFname
             PDFInfo.aliosspath = name
-            LOG.info(f'### mobileNum:{mobileNum}')
+            LOG.info(f'### mobileNum:{mobile}')
             PDFInfo.user = userInfo
             PDFInfo.save()
             data = zfile.read(fileN)
             self.bucket.put_object(name, data)
-            
+
         ssender = SmsSingleSender(appid, appkey)
         for key, val in studict.items():
             try:
@@ -165,6 +179,4 @@ class UploadImageAdmin(admin.ModelAdmin):
 if __name__ == '__main__':
     x = Xfer()
     x.initAliyun()
-    # url = x.sign_url("VIDEO/微信_2019-08-27_21-03-36_CeLuCuX.mp4")
-    url = x.sign_url("VIDEO/微信_2019-08-27_21-03-36_CeLuCuX.mp4")
-    print(url)
+    # print(url)
