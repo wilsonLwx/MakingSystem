@@ -4,9 +4,6 @@ from django.test import TestCase
 # Create your tests here.
 import oss2
 # 用户登录名称 object-oss@1463266644828335.onaliyun.com
-# AccessKey ID LTAIeFNriSXX6ySq
-# AccessKeySecret QHdxPWx7JU9q6Y55D3feQxlwcfZb66
-auth = oss2.Auth('LTAIeFNriSXX6ySq', 'QHdxPWx7JU9q6Y55D3feQxlwcfZb66')
 #
 # file_name = '/home/hw/test.pdf'
 #
