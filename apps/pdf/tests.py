@@ -3,9 +3,7 @@ from django.test import TestCase
 
 # Create your tests here.
 import oss2
-# 用户登录名称 object-oss@.onaliyun.com
 
-auth = oss2.Auth('', '')
 #
 # file_name = '/home/hw/test.pdf'
 #
